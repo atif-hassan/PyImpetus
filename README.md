@@ -17,10 +17,17 @@ PyImpetus is basically the interIAMB algorithm as provided in the paper, titled,
 # The initialization of PyImpetus takes in multiple parameters as input
 fs = inter_IAMB(model=None, min_feat_proba_thresh=0.1, p_val_thresh=0.05, k_feats_select=5, num_simul=100, stratified=False, num_cv_splits=5, regression=False, verbose=1)
 ```
-- **model** - The model which is used to find perform classification/regression in order to find feature importance via t-test. By default, a decision tree is used. The idea is that, you don't want to use a linear model as you won't be able to pick any non-linear relationship that a single feature has with other features or the target variable. For non-linear models, one should use heavily regularized complex models or a simple decision tree which requires little to no pre-processing. Therefore, the default model is a decision tree
-- **target** - A string denoting the target variable in the dataframe.
+- **model** - The model which is used to perform classification/regression in order to find feature importance via t-test. The idea is that, you don't want to use a linear model as you won't be able to pick any non-linear relationship that a single feature has with other features or the target variable. For non-linear models, one should use heavily regularized complex models or a simple decision tree which requires little to no pre-processing. Therefore, the default model is a decision tree.
+- **min_feat_proba_thresh** - The minimum probability of occurrence that a feature should possess over all folds for it to be considered in the final Markov Blanket (MB) of target variable. Default values is set to 0.1 meaning that all features that have occurred in at least two folds or more shall be considered
+- **p_val_thresh** - The p-value (in this case, feature importance) below which a feature will be considered as a candidate for the final MB. Default value is standard 0.05
+- **k_feats_select** - The number of features to select during growth phase of InterIAMB algorithm. Larger values give faster results. Effect of large values has not yet been tested so default is set to 5.
+- **num_simul** - Number of train-test splits to perform to check usefulness of each feature. Default is 100 but for large datasets, this size should be considerably reduced though do not go below 10.
+- **stratified** - CV should be stratified or simple KFold. Default is simple KFold.
+- **num_cv_splits** - Value of K in KFold. Default value is 5.
+- **regression** - Set this to true if current task is a regression task otherwise default is false.
+- **verbose** - Set this to 0 if you do not want stage-wise print statements which denote progress. Default is 1.
 
-```
+```python
 # This function returns a list of features for input pandas dataset
 fit(data, target)
 ```
@@ -48,19 +55,10 @@ feats = fs.fit(df_train_, "Response")
 X_train = fs.transform(df_train).values
 # Prune the test dataset as well
 X_test = fs.transform(df_test).values
-
-# You might recieve info about class merger for low sample classes
-# Generate classes
-Y_classes = rs.fit(df_train, target=target, bins=num_bins)
-# Create the actual target variable
-Y = df_train[target]
-
-# Create a smote (over-sampling) object from imblearn
-smote = SMOTE(random_state=27)
-
-# Now resample
-final_X, final_Y = rs.resample(smote, df_train, Y_classes)
 ```
+
+## Timeit!
+On a dataset of 381,110 samples and 10 features, PyImpetus took approximately 4.48 minutes on each fold of a 5-fold CV with the final set of features being selected at around 22.4 minutes. This time can be considerably reduced by running each fold in parallel via multi-threading.
 
 ## Tutorials
 You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb). I got a huge boost in AnalyticVidhya's JanataHack: Cross-sell Prediction hackathon. I jumped from rank 223/600 to 166/600 just by using the features recommended by PyImpetus. I was also able to out-perform SOTA in terms of f1-score by about 4% on Alzheimer disease dataset using PyImpetus. The paper is currently being written.
