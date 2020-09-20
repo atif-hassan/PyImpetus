@@ -10,40 +10,44 @@ PyImpetus is a feature selection algorithm that picks features by considering th
 PyImpetus is basically the interIAMB algorithm as provided in the paper, titled, [An Improved IAMB Algorithm for Markov Blanket Discovery](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.348.4667&rep=rep1&type=pdf#page=137) [1] with the conditional mutual information part being replaced by a conditional test. This test is as described in the paper, titled, [Testing Conditional Independence in Supervised Learning Algorithms](https://arxiv.org/abs/1901.09917) [2].
 
 ## How to install?
-```pip install reg_resampler```
+```pip install PyImpetus```
 
 ## Functions and parameters
 ```python
-# This returns a numpy list of classes for each corresponding sample. It also automatically merges classes when required
-fit(X, target, bins=3, min_n_samples=6, balanced_binning=False, verbose=2)
+# The initialization of PyImpetus takes in multiple parameters as input
+fs = inter_IAMB(model=None, min_feat_proba_thresh=0.1, p_val_thresh=0.05, k_feats_select=5, num_simul=100, stratified=False, num_cv_splits=5, regression=False, verbose=1)
 ```
-- **X** - Either a pandas dataframe or numpy matrix. Complete data to be resampled.
-- **target** - Either string (for pandas) or index (for numpy). The target variable to be resampled.
-- **bins=3** - The number of classes that the user wants to generate. (Default: 3)
-- **min_n_samples=6** - Minimum number of samples in each bin. Bins having less than this value will be merged with the closest bin. Has to be more than neighbours in imblearn. (Default: 6)
-- **balanced_binning=False** - Decides whether samples are to be distributed roughly equally across all classes. (Default: False)
-- **verbose=2** - 0 will disable print by package, 1 will print info about class mergers and 2 will also print class distributions.
+- **model** - The model which is used to find perform classification/regression in order to find feature importance via t-test. By default, a decision tree is used. The idea is that, you don't want to use a linear model as you won't be able to pick any non-linear relationship that a single feature has with other features or the target variable. For non-linear models, one should use heavily regularized complex models or a simple decision tree which requires little to no pre-processing. Therefore, the default model is a decision tree
+- **target** - A string denoting the target variable in the dataframe.
+
+```
+# This function returns a list of features for input pandas dataset
+fit(data, target)
+```
+- **data** - A pandas dataframe upon which feature selection is to be applied
+- **target** - A string denoting the target variable in the dataframe.
 
 ```python
-# Performs resampling and returns the resampled dataframe/numpy matrices in the form of data and target variable.
-resample(sampler_obj, trainX, trainY)
+# This function returns a pruned dataframe consisting of only the selected features
+transform(data)
 ```
-- **sampler_obj** - Your favourite resampling algorithm's object (currently supports imblearn)
-- **trainX** - Either a pandas dataframe or numpy matrix. Data to be resampled. Also, contains the target variable
-- **trainY** - Numpy array of psuedo classes obtained from fit function.
-
-### Important Note
-All functions return the same data type as provided in input.
+- **data** - The dataframe which is to be pruned to the selected features
 
 ## How to import?
 ```python
-from reg_resampler import resampler
+from PyImpetus import inter_IAMB
 ```
 
 ## Usage
 ```python
 # Initialize the resampler object
-rs = resampler()
+fs = inter_IAMB(num_simul=10)
+# The fit function returns a list of the features selected
+feats = fs.fit(df_train_, "Response")
+# The transform function prunes your pandas dataset to the set of final features
+X_train = fs.transform(df_train).values
+# Prune the test dataset as well
+X_test = fs.transform(df_test).values
 
 # You might recieve info about class merger for low sample classes
 # Generate classes
@@ -59,10 +63,10 @@ final_X, final_Y = rs.resample(smote, df_train, Y_classes)
 ```
 
 ## Tutorials
-You can find a usage [tutorial here](https://github.com/atif-hassan/Regression_ReSampling/tree/master/tutorials). I got a huge boost in the JanataHack
+You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb). I got a huge boost in AnalyticVidhya's JanataHack: Cross-sell Prediction hackathon. I jumped from rank 223/600 to 166/600 just by using the features recommended by PyImpetus. I was also able to out-perform SOTA in terms of f1-score by about 4% on Alzheimer disease dataset using PyImpetus. The paper is currently being written.
 
 ## Future Ideas
-- Multi-threading the CV in order to drastically reduce the computation time
+- Multi-threading CV in order to drastically reduce computation time
 
 ## Feature Request
 Drop me an email at **atif.hit.hassan@gmail.com** if you want any particular feature
