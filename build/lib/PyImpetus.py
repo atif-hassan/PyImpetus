@@ -10,7 +10,6 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
 
 
-# CURRENTLY THIS ONLY SUPPORTS BINARY CLASSIFICATION
 class inter_IAMB:
     def __init__(self, model=None, min_feat_proba_thresh=0.1, p_val_thresh=0.05, k_feats_select=5, num_simul=100, stratified=False, num_cv_splits=5, regression=False, verbose=1):
         # Defines the model which will be used for conditional feature selection
