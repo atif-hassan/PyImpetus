@@ -5,9 +5,9 @@
 [![Downloads](https://pepy.tech/badge/PyImpetus)](https://pepy.tech/project/PyImpetus)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/atif-hassan/PyImpetus/commits/master)
 # PyImpetus
-PyImpetus is a feature selection algorithm that picks features by considering their performance both individually as well as conditioned on other selected features. This allows the algorithm to not only select the best set of features, it also selects the best set of features that play well with each other. For example, the best performing feature might not play well with others while the remaining features, when taken together could out-perform the best feature. PyImpetus takes this into account and produces the best possible combination.
+PyImpetus is a **feature selection algorithm** that picks features by considering their performance both individually as well as conditioned on other selected features. This allows the algorithm to not only select the best set of features, it also selects the **best set of features that play well with each other**. For example, the best performing feature might not play well with others while the remaining features, when taken together could out-perform the best feature. PyImpetus takes this into account and produces the best possible combination.
 
-PyImpetus is basically the interIAMB algorithm as provided in the paper, titled, [An Improved IAMB Algorithm for Markov Blanket Discovery](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.348.4667&rep=rep1&type=pdf#page=137) [1] with the conditional mutual information part being replaced by a conditional test. This test is as described in the paper, titled, [Testing Conditional Independence in Supervised Learning Algorithms](https://arxiv.org/abs/1901.09917) [2].
+PyImpetus is basically the **interIAMB** algorithm as provided in the paper, titled, [An Improved IAMB Algorithm for Markov Blanket Discovery](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.348.4667&rep=rep1&type=pdf#page=137) [1] with the conditional mutual information part being replaced by a **conditional test**. This test is as described in the paper, titled, [Testing Conditional Independence in Supervised Learning Algorithms](https://arxiv.org/abs/1901.09917) [2].
 
 ## How to install?
 ```pip install PyImpetus```
@@ -50,7 +50,7 @@ from PyImpetus import inter_IAMB
 # Initialize the resampler object
 fs = inter_IAMB(num_simul=10)
 # The fit function returns a list of the features selected
-feats = fs.fit(df_train_, "Response")
+feats = fs.fit(df_train, "Response")
 # The transform function prunes your pandas dataset to the set of final features
 X_train = fs.transform(df_train).values
 # Prune the test dataset as well
@@ -58,10 +58,10 @@ X_test = fs.transform(df_test).values
 ```
 
 ## Timeit!
-On a dataset of 381,110 samples and 10 features, PyImpetus took approximately 4.48 minutes on each fold of a 5-fold CV with the final set of features being selected at around 22.4 minutes. This time can be considerably reduced by running each fold in parallel via multi-threading.
+On a dataset of **381,110** samples and **10** features, PyImpetus took approximately **4.48** minutes on each fold of a 5-fold CV with the final set of features being selected at around **22.4** minutes. This time can be considerably reduced by running each fold in parallel via multi-threading.
 
 ## Tutorials
-You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb). I got a huge boost in AnalyticVidhya's JanataHack: Cross-sell Prediction hackathon. I jumped from rank 223/600 to 166/600 just by using the features recommended by PyImpetus. I was also able to out-perform SOTA in terms of f1-score by about 4% on Alzheimer disease dataset using PyImpetus. The paper is currently being written.
+You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb). I got a huge boost in AnalyticVidhya's JanataHack: Cross-sell Prediction hackathon. I jumped from rank **223/600 to 166/600 just by using the features recommended by PyImpetus**. I was also able to **out-perform SOTA in terms of f1-score by about 4% on Alzheimer disease dataset using PyImpetus**. The paper is currently being written.
 
 ## Future Ideas
 - Multi-threading CV in order to drastically reduce computation time
