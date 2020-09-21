@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from sklearn.base import TransformerMixin, BaseEstimator
+from sklearn.base import TransformerMixin, BaseEstimator, clone
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import log_loss, mean_squared_error
 import scipy.stats as ss
@@ -8,8 +8,8 @@ import copy
 from collections import Counter
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.model_selection._split import check_cv
-from sklearn.utils.validation import check_is_fitted
-
+from sklearn.utils.validation import check_is_fitted, check_random_state
+from joblib import Parallel, delayed
 
 class inter_IAMB(TransformerMixin, BaseEstimator):
     """
@@ -59,8 +59,31 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
     regression : bool, default=False
         Defines the task - whether it is regression or classification.
 
-    verbose : int, default=1
+    verbose : int, default=0
         Controls the verbosity: the higher, the more messages.
+
+    random_state : int or RandomState instance, default=None
+        Pass an int for reproducible output across multiple function calls.
+
+    n_jobs : int, default=None
+        The number of CPUs to use to do the computation.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors.
+
+    pre_dispatch : int or str, default='2*n_jobs'
+        Controls the number of jobs that get dispatched during parallel
+        execution. Reducing this number can be useful to avoid an
+        explosion of memory consumption when more jobs get dispatched
+        than CPUs can process. This parameter can be:
+
+            - None, in which case all the jobs are immediately
+              created and spawned. Use this for lightweight and
+              fast-running jobs, to avoid delays due to on-demand
+              spawning of the jobs
+            - An int, giving the exact number of total jobs that are
+              spawned
+            - A str, giving an expression as a function of n_jobs,
+              as in '2*n_jobs'
 
     Attributes
     ----------
@@ -83,14 +106,16 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
        Supervised Learning Algorithms". arXiv preprint arXiv:1901.09917.
     """
 
-    def __init__(self, model=None, min_feat_proba_thresh=0.1, p_val_thresh=0.05, k_feats_select=5, num_simul=100, cv=5, regression=False, verbose=1):
+    def __init__(self, model=None, min_feat_proba_thresh=0.1, p_val_thresh=0.05, k_feats_select=5, num_simul=100, cv=5, regression=False, random_state=None, verbose=0, n_jobs=None, pre_dispatch="2*n_jobs"):
         # Defines the model which will be used for conditional feature selection
+        self.random_state = random_state
+        
         if model:
-            self.model = model
+            self.model = clone(model)
         elif regression:
-            self.model = DecisionTreeRegressor(random_state=27)
+            self.model = DecisionTreeRegressor()
         else:
-            self.model = DecisionTreeClassifier(random_state=27)
+            self.model = DecisionTreeClassifier()
         # The minimum probability of occurrence that a feature should possess over all folds for it to be considered in the final MB
         self.min_feat_proba_thresh = min_feat_proba_thresh
         # The p-value below which the feature will considered as a candidate for the final MB
@@ -105,6 +130,9 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         self.verbose = verbose
         # Defines the task whether it is regression or classification
         self.regression = regression
+        
+        self.n_jobs = n_jobs
+        self.pre_dispatch = pre_dispatch
 
 
     def _CPI(self, X, Y, Z, B, orig_model, regression):
@@ -123,8 +151,8 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         testX, testY = list(), list()
 
         for i in range(B):
-            x_train, x_test, y_train, y_test = train_test_split(data, Y, test_size=0.2, random_state=i)
-            model = copy.deepcopy(orig_model)
+            x_train, x_test, y_train, y_test = train_test_split(data, Y, test_size=0.2, random_state=self.rng_)
+            model = clone(orig_model)
             model.fit(x_train, y_train)
             if regression:
                 preds = model.predict(x_test)
@@ -134,11 +162,10 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
                 testX.append(log_loss(y_test, preds))
 
             # Perform permutation
-            np.random.seed(i)
-            np.random.shuffle(x_train[:,0])
-            np.random.shuffle(x_test[:,0])
+            self.rng_.shuffle(x_train[:,0])
+            self.rng_.shuffle(x_test[:,0])
 
-            model = copy.deepcopy(orig_model)
+            model = clone(orig_model)
             model.fit(x_train, y_train)
             if regression:
                 preds = model.predict(x_test)
@@ -160,10 +187,7 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         best = list()
         # For each feature in MB, check if it is false positive
         for col in data.columns:
-            if len(MB) > 0:
-                p_val = self._CPI(data[col].values, Y, orig_data[MB].values, B, model, regression)
-            else:
-                p_val = self._CPI(data[col].values, Y, None, B,  model, regression)
+            p_val = self._CPI(data[col].values, Y, orig_data[MB].values if len(MB) > 0 else None, B, model, regression)
             best.append([col, p_val])
         
         # Sort and pick the top n features
@@ -237,8 +261,21 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         # Finally, return the Markov Blanket of the target variable
         return MB
 
+    def _fit_single(self, X, y, train, cv_index):
+        if self.verbose >= 1:
+            print("CV Number: ", cv_index+1, "\n#############################")
+            
+        # Define the X and Y variables
+        X_, y_ = X.loc[train], y[train].values
 
+        # The inter_IAMB function returns a list of features for current fold
+        feats = self._inter_IAMB(X_, y_)
 
+        # Do some printing if specified
+        if self.verbose >= 1:
+            print("\nFinal features selected in this fold: ", feats)
+            print()
+        return feats
 
     # Call this to get a list of selected features
     def fit(self, X, y, groups=None):
@@ -273,28 +310,21 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         # The final list of features
         self.final_feats_ = list()
 
-        # List of candidate features from each fold
-        feature_sets = list()
+        self.rng_ = check_random_state(self.random_state)
+        self.model.set_params(random_state=self.rng_)
 
         cv = check_cv(self.cv, y, classifier=(not self.regression))
         num_cv_splits = cv.get_n_splits(X, y, groups)
 
-        for cv_index, (train, test) in enumerate(cv.split(X, y, groups)):
-            if self.verbose >= 1:
-                print("CV Number: ", cv_index+1, "\n#############################")
-                
-            # Define the X and Y variables
-            X_, y_ = X.loc[train], y[train].to_numpy()
-
-            # The inter_IAMB function returns a list of features for current fold
-            feats = self._inter_IAMB(X_.copy(), y_)
-            feature_sets.extend(feats)
-
-            # Do some printing if specified
-            if self.verbose >= 1:
-                print("\nFinal features selected in this fold: ", feats)
-                print()
-
+        parallel = Parallel(n_jobs=self.n_jobs, verbose=self.verbose,
+                            pre_dispatch=self.pre_dispatch)
+        feature_sets = parallel(
+            delayed(self._fit_single)(
+                X, y, train_test_tuple[0], cv_index)
+            for cv_index, train_test_tuple in enumerate(cv.split(X, y, groups)))
+        # flatten the list
+        feature_sets = [item for sublist in feature_sets for item in sublist]
+        print(feature_sets)
         # Get the list of all candidate features and their probabilities
         proposed_feats = [[i, j/num_cv_splits] for i, j in Counter(feature_sets).items()]
         # Pretty printing
