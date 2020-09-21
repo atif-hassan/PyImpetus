@@ -11,6 +11,7 @@ from sklearn.model_selection._split import check_cv
 from sklearn.utils.validation import check_is_fitted, check_random_state
 from joblib import Parallel, delayed
 
+
 class inter_IAMB(TransformerMixin, BaseEstimator):
     """
     PyImpetus - interIAMB feature selection algorithm with the conditional mutual
@@ -106,10 +107,23 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
        Supervised Learning Algorithms". arXiv preprint arXiv:1901.09917.
     """
 
-    def __init__(self, model=None, min_feat_proba_thresh=0.1, p_val_thresh=0.05, k_feats_select=5, num_simul=100, cv=5, regression=False, random_state=None, verbose=0, n_jobs=None, pre_dispatch="2*n_jobs"):
+    def __init__(
+        self,
+        model=None,
+        min_feat_proba_thresh=0.1,
+        p_val_thresh=0.05,
+        k_feats_select=5,
+        num_simul=100,
+        cv=5,
+        regression=False,
+        random_state=None,
+        verbose=0,
+        n_jobs=None,
+        pre_dispatch="2*n_jobs",
+    ):
         # Defines the model which will be used for conditional feature selection
         self.random_state = random_state
-        
+
         if model:
             self.model = clone(model)
         elif regression:
@@ -124,16 +138,15 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         self.k_feats_select = k_feats_select
         # Number of train-test splits to perform to check usefulness of each feature
         self.num_simul = num_simul
-        # Number of folds for CV 
+        # Number of folds for CV
         self.cv = cv
         # For printing some stuff
         self.verbose = verbose
         # Defines the task whether it is regression or classification
         self.regression = regression
-        
+
         self.n_jobs = n_jobs
         self.pre_dispatch = pre_dispatch
-
 
     def _CPI(self, X, Y, Z, B, orig_model, regression):
         # Generate the data matrix
@@ -151,19 +164,21 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         testX, testY = list(), list()
 
         for i in range(B):
-            x_train, x_test, y_train, y_test = train_test_split(data, Y, test_size=0.2, random_state=self.rng_)
+            x_train, x_test, y_train, y_test = train_test_split(
+                data, Y, test_size=0.2, random_state=self.rng_
+            )
             model = clone(orig_model)
             model.fit(x_train, y_train)
             if regression:
                 preds = model.predict(x_test)
                 testX.append(mean_squared_error(y_test, preds))
             else:
-                preds = model.predict_proba(x_test)[:,1]
+                preds = model.predict_proba(x_test)[:, 1]
                 testX.append(log_loss(y_test, preds))
 
             # Perform permutation
-            self.rng_.shuffle(x_train[:,0])
-            self.rng_.shuffle(x_test[:,0])
+            self.rng_.shuffle(x_train[:, 0])
+            self.rng_.shuffle(x_test[:, 0])
 
             model = clone(orig_model)
             model.fit(x_train, y_train)
@@ -171,31 +186,32 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
                 preds = model.predict(x_test)
                 testY.append(mean_squared_error(y_test, preds))
             else:
-                preds = model.predict_proba(x_test)[:,1]
+                preds = model.predict_proba(x_test)[:, 1]
                 testY.append(log_loss(y_test, preds))
 
         # Since we want log_loss to be lesser for testX,
         # we therefore perform one tail paired t-test (to the left and not right)
-        t_stat, p_val = ss.ttest_ind(testX, testY, nan_policy='omit')
-        return ss.t.cdf(t_stat, len(testX) + len(testY) - 2) # Left part of t-test
+        t_stat, p_val = ss.ttest_ind(testX, testY, nan_policy="omit")
+        return ss.t.cdf(t_stat, len(testX) + len(testY) - 2)  # Left part of t-test
 
-
-
-       
     # Function that performs the growth stage of the Inter-IAMB algorithm
     def _grow(self, data, orig_data, Y, MB, n, B, model, regression):
         best = list()
         # For each feature in MB, check if it is false positive
         for col in data.columns:
-            p_val = self._CPI(data[col].values, Y, orig_data[MB].values if len(MB) > 0 else None, B, model, regression)
+            p_val = self._CPI(
+                data[col].values,
+                Y,
+                orig_data[MB].values if len(MB) > 0 else None,
+                B,
+                model,
+                regression,
+            )
             best.append([col, p_val])
-        
+
         # Sort and pick the top n features
-        best.sort(key = lambda x: x[1])
+        best.sort(key=lambda x: x[1])
         return best[:n]
-
-
-
 
     # Function that performs the shrinking stage of the Inter-IAMB algorithm
     def _shrink(self, data, Y, MB, thresh, B, model, regression):
@@ -208,20 +224,19 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         remove = list()
         # For each feature in MB, check if it is false positive
         for col in MB:
-            MB_to_consider = [i for i in MB if i not in [col]+remove]
+            MB_to_consider = [i for i in MB if i not in [col] + remove]
             # Again, if there is only one element in MB, no shrinkage is required
             if len(MB_to_consider) < 1:
                 break
             # Get the p-value from the Conditional Predictive Information Test
-            p_val = self._CPI(data[col].values, Y, data[MB_to_consider].values, B, model, regression)
+            p_val = self._CPI(
+                data[col].values, Y, data[MB_to_consider].values, B, model, regression
+            )
             if p_val > thresh:
                 remove.append(col)
         # Reverse back the list
         MB.reverse()
         return remove
-
-
-
 
     # Function that performs the Inter-IAMB algorithm
     # Outputs the Markov Blanket (MB) as well as the false positive features
@@ -230,41 +245,58 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         orig_data = data.copy()
         Y = np.reshape(Y, (-1, 1))
         MB = list()
-        
+
         # Run the algorithm until there is no change in current epoch MB and previous epoch MB
         while True:
             old_MB = list(MB)
-            
+
             # Growth phase
-            best = self._grow(data, orig_data, Y, MB, self.k_feats_select, self.num_simul, self.model, self.regression)
+            best = self._grow(
+                data,
+                orig_data,
+                Y,
+                MB,
+                self.k_feats_select,
+                self.num_simul,
+                self.model,
+                self.regression,
+            )
             for best_feat, best_val in best:
                 if best_val < self.p_val_thresh:
                     MB.append(best_feat)
 
             # Shrink phase
-            remove_feats = self._shrink(orig_data, Y, MB, self.p_val_thresh, self.num_simul, self.model, self.regression)
+            remove_feats = self._shrink(
+                orig_data,
+                Y,
+                MB,
+                self.p_val_thresh,
+                self.num_simul,
+                self.model,
+                self.regression,
+            )
             for feat in remove_feats:
                 MB.pop(MB.index(feat))
-            
+
             # Remove all features in MB and remove_feats from the dataframe
             feats_to_remove = list()
-            for i in MB+remove_feats:
+            for i in MB + remove_feats:
                 if i in data.columns:
                     feats_to_remove.append(i)
             data = data.drop(feats_to_remove, axis=1)
-            
+
             # Break if current MB is same as previous MB
             if old_MB == MB:
                 break
             print("Candidate features: ", MB)
-            
+
         # Finally, return the Markov Blanket of the target variable
         return MB
 
     def _fit_single(self, X, y, train, cv_index):
         if self.verbose >= 1:
-            print("CV Number: ", cv_index+1, "\n#############################")
-            
+            print("CV Number: ", cv_index + 1, "\n#############################")
+
         # Define the X and Y variables
         X_, y_ = X.loc[train], y[train].values
 
@@ -305,7 +337,9 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
             raise TypeError("X param must be a pandas.DataFrame instance")
 
         if not (isinstance(y, pd.DataFrame) or isinstance(y, pd.Series)):
-            raise TypeError("y param must be a pandas.DataFrame or pandas.Series instance")
+            raise TypeError(
+                "y param must be a pandas.DataFrame or pandas.Series instance"
+            )
 
         # The final list of features
         self.final_feats_ = list()
@@ -316,17 +350,20 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         cv = check_cv(self.cv, y, classifier=(not self.regression))
         num_cv_splits = cv.get_n_splits(X, y, groups)
 
-        parallel = Parallel(n_jobs=self.n_jobs, verbose=self.verbose,
-                            pre_dispatch=self.pre_dispatch)
+        parallel = Parallel(
+            n_jobs=self.n_jobs, verbose=self.verbose, pre_dispatch=self.pre_dispatch
+        )
         feature_sets = parallel(
-            delayed(self._fit_single)(
-                X, y, train_test_tuple[0], cv_index)
-            for cv_index, train_test_tuple in enumerate(cv.split(X, y, groups)))
+            delayed(self._fit_single)(X, y, train_test_tuple[0], cv_index)
+            for cv_index, train_test_tuple in enumerate(cv.split(X, y, groups))
+        )
         # flatten the list
         feature_sets = [item for sublist in feature_sets for item in sublist]
         print(feature_sets)
         # Get the list of all candidate features and their probabilities
-        proposed_feats = [[i, j/num_cv_splits] for i, j in Counter(feature_sets).items()]
+        proposed_feats = [
+            [i, j / num_cv_splits] for i, j in Counter(feature_sets).items()
+        ]
         # Pretty printing
         if self.verbose >= 1:
             print("\n\nFINAL SELECTED FEATURES\n##################################")
@@ -338,9 +375,6 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
                 self.final_feats_.append(a)
         # Finally, return the final set of features
         return self
-
-
-
 
     # Call this function to simply return the pruned (feature-wise) data
     def transform(self, X, y=None):
@@ -364,9 +398,6 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         check_is_fitted(self)
         X = X.copy()
         return X[self.final_feats_]
-
-
-
 
     # A quick wrapper function for fit() and transform()
     def fit_transform(self, X, y, groups=None):
