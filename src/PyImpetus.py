@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from sklearn.base import TransformerMixin, BaseEstimator
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import log_loss, mean_squared_error
@@ -8,7 +9,6 @@ from collections import Counter
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.model_selection._split import check_cv
 from sklearn.utils.validation import check_is_fitted
-
 
 
 class inter_IAMB(TransformerMixin, BaseEstimator):
@@ -76,12 +76,11 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
 
     References
     ----------
-    .. [1] Zhang, Yishi and Zhang, Zigang and Liu, Kaijun and Qian, Gangyi,
-       "An Improved IAMB Algorithm for Markov Blanket Discovery", 
-       JCP, 5, 1755-1761, 10.4304/jcp.5.11.1755-1761, 2010.
+    .. [1] Zhang, Y., Zhang, Z., Liu, K., & Qian, G. (2010).
+       "An Improved IAMB Algorithm for Markov Blanket Discovery". JCP, 5(11), 1755-1761.
 
-    .. [2] David S. Watson and Marvin N. Wright, "Testing Conditional
-       Independence in Supervised Learning Algorithms", arXiv, 1901.09917, 2019.
+    .. [2] Watson, D. S., & Wright, M. N. (2019). "Testing Conditional Independence in
+       Supervised Learning Algorithms". arXiv preprint arXiv:1901.09917.
     """
 
     def __init__(self, model=None, min_feat_proba_thresh=0.1, p_val_thresh=0.05, k_feats_select=5, num_simul=100, cv=5, regression=False, verbose=1):
@@ -248,12 +247,11 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         
         Parameters
         ----------
-        X : array-like of shape (n_samples, n_features)
+        X : pandas.DataFrame
             The data used to compute the per-feature minimum and maximum
             used for later scaling along the features axis.
         
-        y : array-like of shape (n_samples, n_output) \
-            or (n_samples,), default=None
+        y : pandas.DataFrame or pandas.Series
             Target relative to X for classification or regression.
         
         groups : array-like of shape (n_samples,), default=None
@@ -266,6 +264,12 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         self
             object
         """
+        if not isinstance(X, pd.DataFrame):
+            raise TypeError("X param must be a pandas.DataFrame instance")
+
+        if not (isinstance(y, pd.DataFrame) or isinstance(y, pd.Series)):
+            raise TypeError("y param must be a pandas.DataFrame or pandas.Series instance")
+
         # The final list of features
         self.final_feats_ = list()
 
@@ -280,7 +284,7 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
                 print("CV Number: ", cv_index+1, "\n#############################")
                 
             # Define the X and Y variables
-            X_, y_ = X.loc[train], y.values[train]
+            X_, y_ = X.loc[train], y[train].to_numpy()
 
             # The inter_IAMB function returns a list of features for current fold
             feats = self._inter_IAMB(X_.copy(), y_)
@@ -315,7 +319,7 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         
         Parameters
         ----------
-        X : array-like of shape (n_samples, n_features)
+        X : pandas.DataFrame
             The data to select features from.
         
         y : Not used.
@@ -324,7 +328,7 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         
         Returns
         -------
-        Xt : array-like of shape (n_samples, n_features)
+        Xt : pandas.DataFrame
             Transformed data.
         """
         check_is_fitted(self)
@@ -341,11 +345,10 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         
         Parameters
         ----------
-        X : array-like of shape (n_samples, n_features)
+        X : pandas.DataFrame
             The data to select features from.
         
-        y : array-like of shape (n_samples, n_output) \
-            or (n_samples,), default=None
+        y : pandas.DataFrame or pandas.Series
             Target relative to X for classification or regression.
         
         groups : array-like of shape (n_samples,), default=None
@@ -355,7 +358,7 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         
         Returns
         -------
-        Xt : array-like of shape (n_samples, n_features)
+        Xt : pandas.DataFrame
             Transformed data.
         """
         # First call fit
