@@ -14,7 +14,6 @@ setuptools.setup(
      long_description_content_type = "text/markdown",
      url = "https://github.com/atif-hassan/PyImpetus",
      py_modules = ["PyImpetus"],
-     package_dir = {'': 'src'},
      install_requires = ["pandas", "scikit-learn", "numpy"],
      include_package_data = True,
      classifiers = [
