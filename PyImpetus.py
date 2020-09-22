@@ -426,4 +426,4 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         # First call fit
         self.fit(X, y, groups=groups)
         # Now transform the data
-        return self.fit_transform(X)
+        return self.transform(X)
