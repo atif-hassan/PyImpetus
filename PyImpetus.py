@@ -288,7 +288,8 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
             # Break if current MB is same as previous MB
             if old_MB == MB:
                 break
-            print("Candidate features: ", MB)
+            if self.verbose >= 1:
+                print("Candidate features: ", MB)
 
         # Finally, return the Markov Blanket of the target variable
         return MB
@@ -358,8 +359,8 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
             for cv_index, train_test_tuple in enumerate(cv.split(X, y, groups))
         )
         # flatten the list
-        feature_sets = [item for sublist in feature_sets for item in sublist]
         print(feature_sets)
+        feature_sets = [item for sublist in feature_sets for item in sublist]
         # Get the list of all candidate features and their probabilities
         proposed_feats = [
             [i, j / num_cv_splits] for i, j in Counter(feature_sets).items()
