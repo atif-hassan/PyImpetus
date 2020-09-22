@@ -23,23 +23,20 @@ fs = inter_IAMB(model=None, min_feat_proba_thresh=0.1, p_val_thresh=0.05, k_feat
 - **k_feats_select** - `int, default=5` The number of features to select during growth phase of InterIAMB algorithm. Larger values give faster results. Effect of large values has not yet been tested.
 - **num_simul** - `int, default=100` Number of train-test splits to perform to check usefulness of each feature. For large datasets, this size should be considerably reduced though do not go below 10.
 - **cv** - `int, cross-validation generator or an iterable, default=None` Determines the cross-validation splitting strategy.
-        Determines the cross-validation splitting strategy.
-        Possible inputs for cv are:
+	Possible inputs for cv are:
 
-        - None, to use the default 5-fold cross validation,
-        - integer, to specify the number of folds in a (Stratified)KFold,
-        - CV splitter,
-        - An iterable yielding (train, test) splits as arrays of indices.
+	- None, to use the default 5-fold cross validation,
+	- integer, to specify the number of folds in a (Stratified)KFold,
+	- CV splitter,
+	- An iterable yielding (train, test) splits as arrays of indices.
 
-        For integer/None inputs, if the ``regression`` param is False and ``y`` is
-        either binary or multiclass, StratifiedKFold is used. In all
-        other cases, KFold is used.
+	For integer/None inputs, if the `regression` param is False and `y` is either binary or multiclass, StratifiedKFold is used. In all other cases, KFold is used.
 - **regression** - `bool, default=False` Defines the task - whether it is regression or classification.
 - **verbose** - `int, default=0` Controls the verbosity: the higher, more the messages.
 - **random_state** - `int or RandomState instance, default=None` Pass an int for reproducible output across multiple function calls.
 - **n_jobs** - `int, default=None` The number of CPUs to use to do the computation.
-	- ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-	- ``-1`` means using all processors.
+	- `None` means 1 unless in a `:obj:joblib.parallel_backend` context.
+	- `-1`` means using all processors.
 - **pre_dispatch** - `int or str, default='2*n_jobs'` Controls the number of jobs that get dispatched during parallel execution. Reducing this number can be useful to avoid an explosion of memory consumption when more jobs get dispatched than CPUs can process. This parameter can be:
 	- None, in which case all the jobs are immediately created and spawned. Use this for lightweight and fast-running jobs, to avoid delays due to on-demand spawning of the jobs
 	- An int, giving the exact number of total jobs that are spawned
@@ -59,7 +56,7 @@ transform(data)
 - **data** - The dataframe which is to be pruned to the selected features
 
 ## Attributes
-- final_feats_ - `ndarray or list of ndarray of shape (n_classes,)` Final list of features.
+- **final_feats_** - `ndarray or list of ndarray of shape (n_classes,)` Final list of features.
 
 ## How to import?
 ```python
@@ -87,7 +84,7 @@ On a dataset of **381,110** samples and **10** features, PyImpetus took approxim
 You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb). I got a huge boost in AnalyticVidhya's JanataHack: Cross-sell Prediction hackathon. I jumped from rank **223/600 to 166/600 just by using the features recommended by PyImpetus**. I was also able to **out-perform SOTA in terms of f1-score by about 4% on Alzheimer disease dataset using PyImpetus**. The paper is currently being written.
 
 ## Future Ideas
-- Multi-threading CV in order to drastically reduce computation time (DONE thanks to [Antoni Baum](https://github.com/Yard1))
+- ~~Multi-threading CV in order to drastically reduce computation ~~ (DONE thanks to [Antoni Baum](https://github.com/Yard1))
 
 ## Feature Request
 Drop me an email at **atif.hit.hassan@gmail.com** if you want any particular feature
