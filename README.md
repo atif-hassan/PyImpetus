@@ -17,15 +17,33 @@ PyImpetus is basically the **interIAMB** algorithm as provided in the paper, tit
 # The initialization of PyImpetus takes in multiple parameters as input
 fs = inter_IAMB(model=None, min_feat_proba_thresh=0.1, p_val_thresh=0.05, k_feats_select=5, num_simul=100, stratified=False, num_cv_splits=5, regression=False, verbose=1)
 ```
-- **model** - `estimator object, default=None`. The model which is used to perform classification/regression in order to find feature importance via t-test. The idea is that, you don't want to use a linear model as you won't be able to pick any non-linear relationship that a single feature has with other features or the target variable. For non-linear models, one should use heavily regularized complex models or a simple decision tree which requires little to no pre-processing. Therefore, the default model is a decision tree.
-- **min_feat_proba_thresh** - The minimum probability of occurrence that a feature should possess over all folds for it to be considered in the final Markov Blanket (MB) of target variable. Default values is set to 0.1 meaning that all features that have occurred in at least two folds or more shall be considered
-- **p_val_thresh** - The p-value (in this case, feature importance) below which a feature will be considered as a candidate for the final MB. Default value is standard 0.05
-- **k_feats_select** - The number of features to select during growth phase of InterIAMB algorithm. Larger values give faster results. Effect of large values has not yet been tested so default is set to 5.
-- **num_simul** - Number of train-test splits to perform to check usefulness of each feature. Default is 100 but for large datasets, this size should be considerably reduced though do not go below 10.
-- **stratified** - CV should be stratified or simple KFold. Default is simple KFold.
-- **num_cv_splits** - Value of K in KFold. Default value is 5.
-- **regression** - Set this to true if current task is a regression task otherwise default is false.
-- **verbose** - Set this to 0 if you do not want stage-wise print statements which denote progress. Default is 1.
+- **model** - `estimator object, default=None` The model which is used to perform classification/regression in order to find feature importance via t-test. The idea is that, you don't want to use a linear model as you won't be able to pick any non-linear relationship that a single feature has with other features or the target variable. For non-linear models, one should use heavily regularized complex models or a simple decision tree which requires little to no pre-processing. Therefore, the default model is a decision tree.
+- **min_feat_proba_thresh** - `float, default=0.1` The minimum probability of occurrence that a feature should possess over all folds for it to be considered in the final Markov Blanket (MB) of target variable
+- **p_val_thresh** - `float, default=0.05` The p-value (in this case, feature importance) below which a feature will be considered as a candidate for the final MB.
+- **k_feats_select** - `int, default=5` The number of features to select during growth phase of InterIAMB algorithm. Larger values give faster results. Effect of large values has not yet been tested.
+- **num_simul** - `int, default=100` Number of train-test splits to perform to check usefulness of each feature. For large datasets, this size should be considerably reduced though do not go below 10.
+- **cv** - `int, cross-validation generator or an iterable, default=None` Determines the cross-validation splitting strategy.
+        Determines the cross-validation splitting strategy.
+        Possible inputs for cv are:
+
+        - None, to use the default 5-fold cross validation,
+        - integer, to specify the number of folds in a (Stratified)KFold,
+        - CV splitter,
+        - An iterable yielding (train, test) splits as arrays of indices.
+
+        For integer/None inputs, if the ``regression`` param is False and ``y`` is
+        either binary or multiclass, StratifiedKFold is used. In all
+        other cases, KFold is used.
+- **regression** - `bool, default=False` Defines the task - whether it is regression or classification.
+- **verbose** - `int, default=0` Controls the verbosity: the higher, more the messages.
+- **random_state** - `int or RandomState instance, default=None` Pass an int for reproducible output across multiple function calls.
+- **n_jobs** - `int, default=None` The number of CPUs to use to do the computation.
+	- ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+	- ``-1`` means using all processors.
+- **pre_dispatch** - `int or str, default='2*n_jobs'` Controls the number of jobs that get dispatched during parallel execution. Reducing this number can be useful to avoid an explosion of memory consumption when more jobs get dispatched than CPUs can process. This parameter can be:
+	- None, in which case all the jobs are immediately created and spawned. Use this for lightweight and fast-running jobs, to avoid delays due to on-demand spawning of the jobs
+	- An int, giving the exact number of total jobs that are spawned
+	- A str, giving an expression as a function of n_jobs, as in '2*n_jobs'
 
 ```python
 # This function returns a list of features for input pandas dataset
@@ -40,6 +58,9 @@ transform(data)
 ```
 - **data** - The dataframe which is to be pruned to the selected features
 
+## Attributes
+- final_feats_ - `ndarray or list of ndarray of shape (n_classes,)` Final list of features.
+
 ## How to import?
 ```python
 from PyImpetus import inter_IAMB
@@ -47,10 +68,12 @@ from PyImpetus import inter_IAMB
 
 ## Usage
 ```python
-# Initialize the resampler object
-fs = inter_IAMB(num_simul=10)
-# The fit function returns a list of the features selected
-feats = fs.fit(df_train, "Response")
+# Initialize the PyImpetus object
+fs = inter_IAMB(num_simul=10, n_jobs=-1, verbose=2, random_state=27)
+# The fit function runs the algorithm and finds the best set of features
+fs.fit(df_train_.drop("Response", axis=1), df_train_["Response"])
+# You can check out the selected features using the "final_feats_" attribute
+feats = fs.final_feats_
 # The transform function prunes your pandas dataset to the set of final features
 X_train = fs.transform(df_train).values
 # Prune the test dataset as well
@@ -58,16 +81,19 @@ X_test = fs.transform(df_test).values
 ```
 
 ## Timeit!
-On a dataset of **381,110** samples and **10** features, PyImpetus took approximately **4.48** minutes on each fold of a 5-fold CV with the final set of features being selected at around **22.4** minutes. This time can be considerably reduced by running each fold in parallel via multi-threading.
+On a dataset of **381,110** samples and **10** features, PyImpetus took approximately **1.68** minutes on each fold of a 5-fold CV with the final set of features being selected at around **8.4** minutes.
 
 ## Tutorials
 You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb). I got a huge boost in AnalyticVidhya's JanataHack: Cross-sell Prediction hackathon. I jumped from rank **223/600 to 166/600 just by using the features recommended by PyImpetus**. I was also able to **out-perform SOTA in terms of f1-score by about 4% on Alzheimer disease dataset using PyImpetus**. The paper is currently being written.
 
 ## Future Ideas
-- Multi-threading CV in order to drastically reduce computation time
+- Multi-threading CV in order to drastically reduce computation time (DONE thanks to [Antoni Baum](https://github.com/Yard1))
 
 ## Feature Request
 Drop me an email at **atif.hit.hassan@gmail.com** if you want any particular feature
+
+## Special Shout Out
+Thanks to [Antoni Baum](https://github.com/Yard1) who restructured my code to match the sklearn API as well as adding parallelism and extensive documentation in code!!
 
 ## References
 <a id="1">[1]</a> 
