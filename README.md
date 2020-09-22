@@ -36,11 +36,11 @@ fs = inter_IAMB(model=None, min_feat_proba_thresh=0.1, p_val_thresh=0.05, k_feat
 - **random_state** - `int or RandomState instance, default=None` Pass an int for reproducible output across multiple function calls.
 - **n_jobs** - `int, default=None` The number of CPUs to use to do the computation.
 	- `None` means 1 unless in a `:obj:joblib.parallel_backend` context.
-	- `-1`` means using all processors.
+	- `-1` means using all processors.
 - **pre_dispatch** - `int or str, default='2*n_jobs'` Controls the number of jobs that get dispatched during parallel execution. Reducing this number can be useful to avoid an explosion of memory consumption when more jobs get dispatched than CPUs can process. This parameter can be:
 	- None, in which case all the jobs are immediately created and spawned. Use this for lightweight and fast-running jobs, to avoid delays due to on-demand spawning of the jobs
 	- An int, giving the exact number of total jobs that are spawned
-	- A str, giving an expression as a function of n_jobs, as in '2*n_jobs'
+	- A str, giving an expression as a function of n_jobs, as in `2*n_jobs`
 
 ```python
 # This function returns a list of features for input pandas dataset
@@ -84,13 +84,13 @@ On a dataset of **381,110** samples and **10** features, PyImpetus took approxim
 You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb). I got a huge boost in AnalyticVidhya's JanataHack: Cross-sell Prediction hackathon. I jumped from rank **223/600 to 166/600 just by using the features recommended by PyImpetus**. I was also able to **out-perform SOTA in terms of f1-score by about 4% on Alzheimer disease dataset using PyImpetus**. The paper is currently being written.
 
 ## Future Ideas
-- ~~Multi-threading CV in order to drastically reduce computation ~~ (DONE thanks to [Antoni Baum](https://github.com/Yard1))
+- ~~Multi-threading CV in order to drastically reduce computation~~ (DONE thanks to [Antoni Baum](https://github.com/Yard1))
 
 ## Feature Request
 Drop me an email at **atif.hit.hassan@gmail.com** if you want any particular feature
 
 ## Special Shout Out
-Thanks to [Antoni Baum](https://github.com/Yard1) who restructured my code to match the sklearn API as well as adding parallelism and extensive documentation in code!!
+Thanks to [Antoni Baum](https://github.com/Yard1) who restructured my code to match the sklearn API, added parallelism and extensive documentation in code along with other miscellaneous stuff. Seriously man, thank you!!
 
 ## References
 <a id="1">[1]</a> 
