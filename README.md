@@ -15,7 +15,7 @@ PyImpetus is basically the **interIAMB** algorithm as provided in the paper, tit
 ## Functions and parameters
 ```python
 # The initialization of PyImpetus takes in multiple parameters as input
-fs = inter_IAMB(model, min_feat_proba_thresh, p_val_thresh, k_feats_select, num_simul, cv, regression, verbose, random_state, n_jobs, pre_dispatch, )
+fs = inter_IAMB(model, min_feat_proba_thresh, p_val_thresh, k_feats_select, num_simul, cv, regression, verbose, random_state, n_jobs, pre_dispatch)
 ```
 - **model** - `estimator object, default=None` The model which is used to perform classification/regression in order to find feature importance via t-test. The idea is that, you don't want to use a linear model as you won't be able to pick any non-linear relationship that a single feature has with other features or the target variable. For non-linear models, one should use heavily regularized complex models or a simple decision tree which requires little to no pre-processing. Therefore, the default model is a decision tree.
 - **min_feat_proba_thresh** - `float, default=0.1` The minimum probability of occurrence that a feature should possess over all folds for it to be considered in the final Markov Blanket (MB) of target variable
