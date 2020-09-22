@@ -78,7 +78,7 @@ X_test = fs.transform(df_test).values
 ```
 
 ## Timeit!
-On a dataset of **381,110** samples and **10** features, PyImpetus took approximately **1.68** minutes on each fold of a 5-fold CV with the final set of features being selected at around **8.4** minutes. This test was performed on a 10th gen corei7.
+On a dataset of **381,110** samples and **10** features, PyImpetus took approximately **1.68** minutes on each fold of a 5-fold CV with the final set of features being selected at around **8.4** minutes. This test was performed on a 10th gen corei7 with n_jobs set tot -1.
 
 ## Tutorials
 You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb). I got a huge boost in AnalyticVidhya's JanataHack: Cross-sell Prediction hackathon. I jumped from rank **223/600 to 166/600 just by using the features recommended by PyImpetus**. I was also able to **out-perform SOTA in terms of f1-score by about 4% on Alzheimer disease dataset using PyImpetus**. The paper is currently being written.
