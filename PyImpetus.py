@@ -24,6 +24,10 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
     play well with others while the remaining features, when taken together could out-perform
     the best feature. PyImpetus takes this into account and produces the best possible combination.
 
+    The fitting process may take considerable time, depending on dataset size and the amount of features.
+    Lowering the ``num_simul`` will reduce runtime at the expense of accuracy, though the bigger
+    the dataset, the less simulations are required to obtain a good result.
+
     Parameters
     ----------
     model : estimator object, default=None
@@ -43,6 +47,7 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
 
     num_simul : int, default=100
         Number of train-test splits to perform to check usefulness of each feature.
+        Has a major effect on runtime.
 
     cv : int, cross-validation generator or an iterable, default=None
         Determines the cross-validation splitting strategy.
@@ -95,6 +100,9 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         Final list of pandas DataFrame column names selected, corresponding
         to ``final_feats_``. If fitted ``X`` was not a pandas DataFrame, will
         be ``None``.
+
+    X_cols_number_ : int
+        Number of columns in fitted data.
 
     Notes
     -----
@@ -221,11 +229,11 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
     def _shrink(self, X, y, MB, thresh, B, model, regression):
         # Reverse the MB and shrink since the first feature in the list is the most important
         MB.reverse()
-        # If there is only one element in the MB, no shrinkage is required
-        if len(MB) < 2:
-            return list()
         # Generate a list for false positive features
         remove = list()
+        # If there is only one element in the MB, no shrinkage is required
+        if len(MB) < 2:
+            return remove
         # For each feature in MB, check if it is false positive
         for col in MB:
             MB_to_consider = [i for i in MB if i not in [col] + remove]
@@ -249,7 +257,7 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
 
         # Run the algorithm until there is no change in current epoch MB and previous epoch MB
         while True:
-            old_MB = list(MB)
+            old_MB = MB.copy()
             # Growth phase
             best = self._grow(
                 X,
@@ -275,7 +283,7 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
                 self.regression,
             )
             for feat in remove_feats:
-                MB.pop(MB.index(feat))
+                MB.remove(feat)
 
             # Remove all features in MB and remove_feats from the dataframe
             feats_to_remove = MB + remove_feats
@@ -330,11 +338,11 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         
         Parameters
         ----------
-        X : pandas.DataFrame
-            The data used to compute the per-feature minimum and maximum
-            used for later scaling along the features axis.
+        X : array-like, shape (n_samples, n_features)
+            Input data, where ``n_samples`` is the number of samples and
+            ``n_features`` is the number of features.
         
-        y : pandas.DataFrame or pandas.Series
+        y : array-like, shape (n_samples, )
             Target relative to X for classification or regression.
         
         groups : array-like of shape (n_samples,), default=None
@@ -368,6 +376,8 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         except:
             X_cols = None
 
+        self.X_cols_number_ = X.shape[1]
+
         try:
             X = X.to_numpy()
             y = y.to_numpy()
@@ -393,7 +403,7 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         if self.verbose >= 1:
             print("\n\nFINAL SELECTED FEATURES\n##################################")
         # Select only those candidate features that have a probability higher than min_feat_proba_thresh
-        self.final_feats_ = list()
+        self.final_feats_ = set()
         for a, b in proposed_feats:
             if b > self.min_feat_proba_thresh:
                 if self.verbose >= 1:
@@ -403,8 +413,8 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
                         "\tProbability Score: ",
                         b,
                     )
-                self.final_feats_.append(a)
-        self.final_feats_.sort()
+                self.final_feats_.add(a)
+        self.final_feats_ = sorted(list(self.final_feats_))
         self.final_feats_pandas_ = (
             self._translate_columns(self.final_feats_, X_cols)
             if X_cols is not None
@@ -420,8 +430,9 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         
         Parameters
         ----------
-        X : pandas.DataFrame
-            The data to select features from.
+        X : array-like, shape (n_samples, n_features)
+            Input data, where ``n_samples`` is the number of samples and
+            ``n_features`` is the number of features.
         
         y : Not used.
         
@@ -434,6 +445,10 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         """
         check_is_fitted(self)
         X = X.copy()
+        if isinstance(X, pd.DataFrame) and self.final_feats_pandas_ is not None:
+            return X[self.final_feats_pandas_]
+        if X.shape[1] != self.X_cols_number_:
+            raise ValueError(f"X has {X.shape[1]} columns, expected {self.X_cols_number_}.")
         try:
             return X.iloc[:, self.final_feats_]
         except:
@@ -446,10 +461,11 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
         
         Parameters
         ----------
-        X : pandas.DataFrame
-            The data to select features from.
+        X : array-like, shape (n_samples, n_features)
+            Input data, where ``n_samples`` is the number of samples and
+            ``n_features`` is the number of features.
         
-        y : pandas.DataFrame or pandas.Series
+        y : array-like, shape (n_samples, )
             Target relative to X for classification or regression.
         
         groups : array-like of shape (n_samples,), default=None
