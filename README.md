@@ -21,7 +21,7 @@ fs = inter_IAMB(model, min_feat_proba_thresh, p_val_thresh, k_feats_select, num_
 - **min_feat_proba_thresh** - `float, default=0.1` The minimum probability of occurrence that a feature should possess over all folds for it to be considered in the final Markov Blanket (MB) of target variable
 - **p_val_thresh** - `float, default=0.05` The p-value (in this case, feature importance) below which a feature will be considered as a candidate for the final MB.
 - **k_feats_select** - `int, default=5` The number of features to select during growth phase of InterIAMB algorithm. Larger values give faster results. Effect of large values has not yet been tested.
-- **num_simul** - `int, default=100` **This feature has huge impact on speed** Number of train-test splits to perform to check usefulness of each feature. For large datasets, this size should be considerably reduced though do not go below 10.
+- **num_simul** - `int, default=100` **(This feature has huge impact on speed)** Number of train-test splits to perform to check usefulness of each feature. For large datasets, this size should be considerably reduced though do not go below 10.
 - **cv** - `int, cross-validation generator or an iterable, default=None` Determines the cross-validation splitting strategy.
 	Possible inputs for cv are:
 
@@ -56,7 +56,9 @@ transform(data)
 - **data** - The dataframe which is to be pruned to the selected features
 
 ## Attributes
-- **final_feats_** - `ndarray or list of ndarray of shape (n_classes,)` Final list of features.
+- **final_feats_** - `list` Final list of column indices selected.
+- **final_feats_pandas_** : `list` Final list of pandas DataFrame column names selected, corresponding to ``final_feats_``. If fitted ``X`` was not a pandas DataFrame, will be ``None``.
+- **X_cols_number_** : `int` Number of columns in fitted data.
 
 ## How to import?
 ```python
