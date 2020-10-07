@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
     
 setuptools.setup(
      name = 'PyImpetus',  
-     version = '1.1.1',
+     version = '1.1.4',
      author = "Atif Hassan",
      author_email = "atif.hit.hassan@gmail.com",
      description = "PyImpetus is a feature selection algorithm which considers features both separately and together as a group in order to provide not just the best set of features but also the best combination of features",
