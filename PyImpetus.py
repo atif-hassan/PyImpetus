@@ -299,7 +299,7 @@ class inter_IAMB(TransformerMixin, BaseEstimator):
                 print("Candidate features: ", self._translate_columns(MB, X_cols))
 
         # Finally, return the Markov Blanket of the target variable
-        return MB
+        return list(set(MB))
 
     def _fit_single(self, X, y, train, cv_index, X_cols):
         if self.verbose >= 1:
