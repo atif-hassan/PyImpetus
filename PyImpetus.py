@@ -43,8 +43,6 @@ class CPIMB(TransformerMixin, BaseEstimator):
     def _feature_importance(self, data, Y, i):
         # The target variable comes in 2D shape. Reshape it
         Y = np.ravel(Y)
-        # Clone the user provided model
-        model = clone(self.model)
         # Split the data into train and test
         x_train, x_test, y_train, y_test = train_test_split(data, Y, test_size=0.2, random_state=i)
         # Find all the labels. If there are more than 2 labels, then it multi-class classification
@@ -52,6 +50,8 @@ class CPIMB(TransformerMixin, BaseEstimator):
         self_labels = np.unique(y_train)
         if len(self_labels) <= 2:
             self_labels = None
+        # Clone the user provided model
+        model = clone(self.model)
         # Fit the model on train data
         model.fit(x_train, y_train)
         # SVM and RidgeClassifiers dont have predict_proba functions so handle accordingly
@@ -62,7 +62,6 @@ class CPIMB(TransformerMixin, BaseEstimator):
         # Calculate log_loss metric. T-test is perfomed on this value
         x = log_loss(y_test, preds, labels=self_labels)
 
-        # Perform transformation
         np.random.seed(i)
         np.random.shuffle(x_test[:,0])
 
@@ -75,7 +74,6 @@ class CPIMB(TransformerMixin, BaseEstimator):
         y = log_loss(y_test, preds, labels=self_labels)
 
         return [x, y]
-
 
 
 
@@ -228,8 +226,8 @@ class CPIMB(TransformerMixin, BaseEstimator):
     #--------------------------------------------------------------
     # transform() - Function that returns the MB part of the data #
     #--------------------------------------------------------------
-    def transform(self):
-        return self.MB
+    def transform(self, data):
+        return data[self.MB]
 
 
 
@@ -241,6 +239,4 @@ class CPIMB(TransformerMixin, BaseEstimator):
     # Y - Target variable
     def fit_transform(self, data, Y):
         self.fit(data, Y)
-        return self.transform()
-
-    
+        return self.transform(data)
