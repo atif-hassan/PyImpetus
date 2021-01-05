@@ -30,7 +30,7 @@ model = CPIMB(model, p_val_thresh, num_simul, cv, verbose, random_state, n_jobs)
 	- `-1` means using all processors.
 
 ```python
-# To fit PyImpetus on provided dataset
+# To fit PyImpetus on provided dataset and find recommended features
 fit(data, target)
 ```
 - **data** - A pandas dataframe upon which feature selection is to be applied
@@ -38,11 +38,12 @@ fit(data, target)
 
 ```python
 # This function returns the names of the columns that form the MB (These are the recommended features)
-transform()
+transform(data)
 ```
+- **data** - A pandas dataframe which needs to be pruned
 
 ```python
-# To fit PyImpetus on provided dataset and return recommended features
+# To fit PyImpetus on provided dataset and return pruned data
 fit_transform(data, target)
 ```
 - **data** - A pandas dataframe upon which feature selection is to be applied
@@ -50,23 +51,24 @@ fit_transform(data, target)
 
 ## How to import?
 ```python
-from CPIMBC import CPIMB
+from PyImeptus import CPIMB
 ```
 
 ## Usage
 ```python
 # Import the algorithm
-from CPIMBC import CPIMB
+from PyImeptus import CPIMB
 # Initialize the PyImpetus object
 model = CPIMB(model=SVC(random_state=27, class_weight="balanced"), p_val_thresh=0.05, num_simul=30, cv=5, random_state=27, n_jobs=-1, verbose=2)
-# The fit_transform function runs the algorithm, finds the best set of features and returns the recommended features
-MB = model.fit_transform(df.drop("Response", axis=1), df["Response"].values)
-# Now create your pruned dataset
-df = df[MB]
+# The fit_transform function is a wrapper for the fit and transform functions, individually.
+# The fit function finds the MB for given data while transform function provides the pruned form of the dataset
+df = model.fit_transform(df.drop("Response", axis=1), df["Response"].values)
+# Check out the MB
+print(model.MB)
 ```
 
 ## Timeit!
-On a dataset of **381,110** samples and **10** features, PyImpetus took 77.6 seconds to find the best set of minimal features. This is in contrast with the previous version of PyImpetus which took 609 seconds for the same dataset. This test was performed on a 10th gen corei7 with n_jobs set tot -1.
+On a dataset of **381,110** samples and **10** features, PyImpetus took 77.6 seconds to find the best set of minimal features. This is in contrast with the previous version of PyImpetus which took 609 seconds for the same dataset. This test was performed on a 10th gen corei7 with n_jobs set to -1.
 
 ## Tutorials
 You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb).
