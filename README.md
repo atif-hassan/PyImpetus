@@ -66,7 +66,7 @@ df = df[MB]
 ```
 
 ## Timeit!
-On a dataset of **381,110** samples and **10** features, PyImpetus took approximately **1.68** minutes on each fold of a 5-fold CV with the final set of features being selected at around **8.4** minutes. This test was performed on a 10th gen corei7 with n_jobs set tot -1.
+On a dataset of **381,110** samples and **10** features, PyImpetus took 77.6 seconds to find the best set of minimal features. This is in contrast with the previous version of PyImpetus which took 609 seconds for the same dataset. This test was performed on a 10th gen corei7 with n_jobs set tot -1.
 
 ## Tutorials
 You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb).
