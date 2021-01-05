@@ -88,6 +88,7 @@ You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/bl
 
 ## Future Ideas
 - The conditional test might change in the near future
+- Add support for regression
 
 ## Feature Request
 Drop me an email at **atif.hit.hassan@gmail.com** if you want any particular feature
