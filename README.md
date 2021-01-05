@@ -93,6 +93,9 @@ You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/bl
 ## Feature Request
 Drop me an email at **atif.hit.hassan@gmail.com** if you want any particular feature
 
+# Please cite this work as
+Reference to the upcoming paper will be added here
+
 ## References
 <a id="1">[1]</a>
 Watson, D. S., & Wright, M. N. (2019).
