@@ -72,12 +72,12 @@ print(model.MB)
 - Increase the **cv** value
 - Increase the **num_simul** value
 
-# For better speeds
+## For better speeds
 - Decrease the **cv** value
 - Decrease the **num_simul** value
 - Set **n_jobs** to -1
 
-# For selection of less features
+## For selection of less features
 - Try reducing the **p_val_thresh** value
 
 ## Timeit!
