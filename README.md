@@ -62,10 +62,23 @@ from PyImeptus import CPIMB
 model = CPIMB(model=SVC(random_state=27, class_weight="balanced"), p_val_thresh=0.05, num_simul=30, cv=5, random_state=27, n_jobs=-1, verbose=2)
 # The fit_transform function is a wrapper for the fit and transform functions, individually.
 # The fit function finds the MB for given data while transform function provides the pruned form of the dataset
-df = model.fit_transform(df.drop("Response", axis=1), df["Response"].values)
+df_train = model.fit_transform(df_train.drop("Response", axis=1), df_train["Response"].values)
+df_test = model.transform(df_test)
 # Check out the MB
 print(model.MB)
 ```
+
+## For better accuracy
+- Increase the **cv** value
+- Increase the **num_simul** value
+
+# For better speeds
+- Decrease the **cv** value
+- Decrease the **num_simul** value
+- Set **n_jobs** to -1
+
+# For selection of less features
+- Try reducing the **p_val_thresh** value
 
 ## Timeit!
 On a dataset of **381,110** samples and **10** features, PyImpetus took 77.6 seconds to find the best set of minimal features. This is in contrast with the previous version of PyImpetus which took 609 seconds for the same dataset. This test was performed on a 10th gen corei7 with n_jobs set to -1.
