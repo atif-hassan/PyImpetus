@@ -2,7 +2,6 @@ import math
 import time
 import numpy as np
 import pandas as pd
-from tqdm.notebook import tqdm
 from sklearn.model_selection import train_test_split, KFold, StratifiedKFold
 from joblib import Parallel, delayed
 from sklearn.tree import DecisionTreeClassifier
@@ -126,7 +125,6 @@ class CPIMB(TransformerMixin, BaseEstimator):
         # Since each feature's importance is checked individually, we can therefore run them in parallel
         parallel = Parallel(n_jobs=self.n_jobs, verbose=self.verbose)
         feats_and_pval = parallel(delayed(self._CPI)(data[col].values, Y, None, col) for col in data.columns)
-        #feats_and_pval = [self._CPI(data[col].values, Y, None, col) for col in tqdm(data.columns)]
         
         # Sort the features according to their importance (decreasing order)
         feats_and_pval.sort(key = lambda x: x[1], reverse=True)
@@ -153,7 +151,7 @@ class CPIMB(TransformerMixin, BaseEstimator):
         # Generate a list for false positive features
         remove = list()
         # For each feature in MB, check if it is false positive
-        for col in tqdm(MB):
+        for col in MB:
             MB_to_consider = [i for i in MB if i not in [col]+remove]
             # Again, if there is only one element in MB, no shrinkage is required
             if len(MB_to_consider) < 1:
@@ -240,3 +238,5 @@ class CPIMB(TransformerMixin, BaseEstimator):
     def fit_transform(self, data, Y):
         self.fit(data, Y)
         return self.transform(data)
+
+    
