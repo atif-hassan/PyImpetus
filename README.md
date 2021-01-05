@@ -17,7 +17,7 @@ PyImpetus was tested on 13 datasets and outperformed state-of-the-art Markov Bla
 ## Functions and parameters
 ```python
 # The initialization of PyImpetus takes in multiple parameters as input
-model = CPIMB(model, min_feat_proba_thresh, p_val_thresh, k_feats_select, num_simul, cv, regression, verbose, random_state, n_jobs, pre_dispatch)
+model = CPIMB(model, p_val_thresh, num_simul, cv, verbose, random_state, n_jobs)
 ```
 - **model** - `estimator object, default=None` The model which is used to perform classification/regression in order to find feature importance via t-test. The idea is that, you don't want to use a linear model as you won't be able to pick any non-linear relationship that a single feature has with other features or the target variable. For non-linear models, one should use heavily regularized complex models or a simple decision tree which requires little to no pre-processing. Therefore, the default model is a decision tree.
 - **p_val_thresh** - `float, default=0.05` The p-value (in this case, feature importance) below which a feature will be considered as a candidate for the final MB.
