@@ -18,7 +18,7 @@ from collections import Counter
 class CPIMB(TransformerMixin, BaseEstimator):
     def __init__(self, model=None, p_val_thresh=0.05, num_simul=30, cv=5, random_state=None, n_jobs=-1, verbose=0):
         self.random_state = random_state
-        if model:
+        if model is not None:
             self.model = model
         else:
             self.model = DecisionTreeClassifier(random_state=self.random_state)
