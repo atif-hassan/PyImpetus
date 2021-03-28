@@ -32,7 +32,7 @@ model = PPIMBC(model, p_val_thresh, num_simul, cv, verbose, random_state, n_jobs
 
 ```python
 # The initialization of PyImpetus takes in multiple parameters as input
-# PPIMBC is for classification
+# PPIMBC is for regression
 model = PPIMBR(model, p_val_thresh, num_simul, cv, verbose, random_state, n_jobs)
 ```
 - **model** - `estimator object, default=DecisionTreeRegressor()` The model which is used to perform regression in order to find feature importance via significance-test. 
