@@ -115,19 +115,16 @@ model.feature_importance()
 | slice_localization_data | 53500 | 384 | Regression | 5.98 | 5.16 | [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Regression_Tutorial.ipynb) |
 
 Here, for the first task, a higher accuracy score is better while for the second, task, a lower MSE (Mean Squared Error) is better.
-Number of features selected by PyImpetus:
-- For Ionosphere dataset: 5 (14% of features selected to achieve 3% improvement)
+
+**Note:** Number of features selected by PyImpetus:
+- For Ionosphere dataset: 5 (14% of features selected to achieve 3% improvement in Accuracy)
 - For slice_location_data: 45 (11.7% of features selected to achieve 0.82 reduction in MSE)
 
 ## Performance in terms of Time (in seconds)
 | Dataset | # of samples | # of features | Task Type | Time (all features) | Time (with PyImpetus) |
-| --- | --- | --- | --- |--- |--- |--- |
+| --- | --- | --- | --- | --- | --- |
 | Ionosphere | 351 | 34 | Classification | 0.0066 | 35.37 |
 | slice_localization_data | 53500 | 384 | Regression | 5.49 | 1296.13 |
-
-
-## Tutorials
-You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb).
 
 ## Future Ideas
 - Let me know
