@@ -97,17 +97,24 @@ model.feature_importance()
 ## For better accuracy
 - Increase the **cv** value
 - Increase the **num_simul** value
+- Use non-linear models for feature selection
 
 ## For better speeds
 - Decrease the **cv** value. For large datasets cv might not be required. Therefore, set **cv=0** to disable the aggregation step. This will result in less robust feature subset selection but at much faster speeds
 - Decrease the **num_simul** value but don't decrease it below 5
 - Set **n_jobs** to -1
+- Use linear models
 
 ## For selection of less features
 - Try reducing the **p_val_thresh** value
 
-## Timeit!
-On a dataset of **381,110** samples and **10** features, PyImpetus took 77.6 seconds to find the best set of minimal features. This is in contrast with the previous version of PyImpetus which took 609 seconds for the same dataset. This test was performed on a 10th gen corei7 with n_jobs set to -1.
+## Performance in terms of Accuracy (classification) and MSE (regression)
+|Dataset|# of samples|# of features|Task Type|Accuracy (all features)|Accuracy (with PyImpetus)|Tutorial|
+---------------------------------------------------------------------------------------------------------
+|Ionosphere|351|34|Classification|88.01|91.73|[tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Classification_Tutorial.ipynb)
+---------------------------------------------------------------------------------------------------------
+|slice_localization_data|53500|384|Regression|5.98|5.16|[tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Regression_Tutorial.ipynb)
+---------------------------------------------------------------------------------------------------------
 
 ## Tutorials
 You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb).
