@@ -109,12 +109,11 @@ model.feature_importance()
 - Try reducing the **p_val_thresh** value
 
 ## Performance in terms of Accuracy (classification) and MSE (regression)
-|Dataset|# of samples|# of features|Task Type|Accuracy (all features)|Accuracy (with PyImpetus)|Tutorial|
----------------------------------------------------------------------------------------------------------
-|Ionosphere|351|34|Classification|88.01|91.73|[tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Classification_Tutorial.ipynb)
----------------------------------------------------------------------------------------------------------
-|slice_localization_data|53500|384|Regression|5.98|5.16|[tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Regression_Tutorial.ipynb)
----------------------------------------------------------------------------------------------------------
+| Dataset | # of samples | # of features | Task Type | Score (all features) | Score (with PyImpetus) | Tutorial |
+| --- | --- | --- | --- |--- |--- |--- |
+| Ionosphere | 351 | 34 | Classification | 88.01 | 91.73 | [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Classification_Tutorial.ipynb) |
+| slice_localization_data | 53500 | 384 | Regression | 5.98 | 5.16 | [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Regression_Tutorial.ipynb) |
+
 
 ## Tutorials
 You can find a usage [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Tutorial.ipynb).
