@@ -11,6 +11,36 @@ import scipy.stats as ss
 from collections import Counter
 import seaborn as sns
 import matplotlib.pyplot as plt
+from tqdm import tqdm
+import contextlib
+import joblib
+
+
+
+# tqdm enabled for joblib
+# This is all thanks to the answer by frenzykryger at https://stackoverflow.com/questions/24983493/tracking-progress-of-joblib-parallel-execution/58936697#58936697
+@contextlib.contextmanager
+def tqdm_joblib(tqdm_object):
+    """Context manager to patch joblib to report into tqdm progress bar given as argument"""
+    class TqdmBatchCompletionCallback(joblib.parallel.BatchCompletionCallBack):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+
+        def __call__(self, *args, **kwargs):
+            tqdm_object.update(n=self.batch_size)
+            return super().__call__(*args, **kwargs)
+
+    old_batch_callback = joblib.parallel.BatchCompletionCallBack
+    joblib.parallel.BatchCompletionCallBack = TqdmBatchCompletionCallback
+    try:
+        yield tqdm_object
+    finally:
+        joblib.parallel.BatchCompletionCallBack = old_batch_callback
+        tqdm_object.close()   
+
+
+
+
 
 
 
@@ -201,14 +231,26 @@ class PPIMBC(TransformerMixin, BaseEstimator):
         # for a value of 0, no CV is applied
         if self.cv!= 0:
             # Find MB for each fold in parallel
-            parallel = Parallel(n_jobs=self.n_jobs, verbose=self.verbose)
+            parallel = Parallel(n_jobs=self.n_jobs)#, verbose=self.verbose)
             if type(self.cv).__name__ == "StratifiedKFold":
-                tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data, Y))
+                if self.verbose > 0:
+                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv)) as progress_bar:
+                        tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data, Y))
+                else:
+                    tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data, Y))
             elif type(self.cv).__name__ == "KFold":
-                tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data))
+                if self.verbose > 0:
+                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv)) as progress_bar:
+                        tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data))
+                else:
+                    tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data))
             else:
                 kfold = KFold(n_splits=self.cv, random_state=self.random_state, shuffle=True)
-                tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in kfold.split(data))
+                if self.verbose > 0:
+                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv)) as progress_bar:
+                        tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in kfold.split(data))
+                else:
+                    tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in kfold.split(data))
 
             # Separate out the features from the importance scores
             for i in range(len(tmp)):
@@ -467,16 +509,29 @@ class PPIMBR(TransformerMixin, BaseEstimator):
     # data - The data provided by user
     # Y - Target variable
     def fit(self, data, Y):
+        # for a value of 0, no CV is applied
         if self.cv!= 0:
             # Find MB for each fold in parallel
-            parallel = Parallel(n_jobs=self.n_jobs, verbose=self.verbose)
+            parallel = Parallel(n_jobs=self.n_jobs)#, verbose=self.verbose)
             if type(self.cv).__name__ == "StratifiedKFold":
-                tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data, Y))
+                if self.verbose > 0:
+                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv)) as progress_bar:
+                        tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data, Y))
+                else:
+                    tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data, Y))
             elif type(self.cv).__name__ == "KFold":
-                tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data))
+                if self.verbose > 0:
+                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv)) as progress_bar:
+                        tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data))
+                else:
+                    tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data))
             else:
                 kfold = KFold(n_splits=self.cv, random_state=self.random_state, shuffle=True)
-                tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in kfold.split(data))
+                if self.verbose > 0:
+                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv)) as progress_bar:
+                        tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in kfold.split(data))
+                else:
+                    tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in kfold.split(data))
 
             # Separate out the features from the importance scores
             for i in range(len(tmp)):
