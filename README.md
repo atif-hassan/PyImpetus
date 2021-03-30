@@ -73,7 +73,7 @@ feature_importance()
 
 ## How to import?
 ```python
-from PyImeptus import PPIMBC, PPIMBR
+from PyImpetus import PPIMBC, PPIMBR
 ```
 
 ## Usage
