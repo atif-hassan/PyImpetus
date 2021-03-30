@@ -121,10 +121,10 @@ Here, for the first task, a higher accuracy score is better while for the second
 - For slice_location_data: 45 (11.7% of features selected to achieve 0.82 reduction in MSE)
 
 ## Performance in terms of Time (in seconds)
-| Dataset | # of samples | # of features | Task Type | Time (all features) | Time (with PyImpetus) |
-| --- | --- | --- | --- | --- | --- |
-| Ionosphere | 351 | 34 | Classification | 0.0066 | 35.37 |
-| slice_localization_data | 53500 | 384 | Regression | 5.49 | 1296.13 |
+| Dataset | # of samples | # of features | Time (with PyImpetus) |
+| --- | --- | --- | --- |
+| Ionosphere | 351 | 34 | 35.37 |
+| slice_localization_data | 53500 | 384 | 1296.13 |
 
 ## Future Ideas
 - Let me know
