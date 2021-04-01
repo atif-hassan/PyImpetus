@@ -95,9 +95,10 @@ model.feature_importance()
 ```
 
 ## For better accuracy
-- Increase the **cv** value
+- Increase the **cv** value (Experimental. Might not improve results)
 - Increase the **num_simul** value
 - Use non-linear models for feature selection
+- Increase value of **p_val_thresh** in order to increase the number of features to include in thre Markov Blanket
 
 ## For better speeds
 - Decrease the **cv** value. For large datasets cv might not be required. Therefore, set **cv=0** to disable the aggregation step. This will result in less robust feature subset selection but at much faster speeds
