@@ -95,7 +95,7 @@ model.feature_importance()
 ```
 
 ## For better accuracy
-- Increase the **cv** value (Experimental. Might not improve results)
+- Increase the **cv** value
 - Increase the **num_simul** value
 - Use non-linear models for feature selection
 - Increase value of **p_val_thresh** in order to increase the number of features to include in thre Markov Blanket
