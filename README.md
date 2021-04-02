@@ -103,7 +103,7 @@ Note: Play with the values of**cv**, **num_simul** and **p_val_thresh** because 
 
 ## For better speeds
 - Decrease the **cv** value. For large datasets cv might not be required. Therefore, set **cv=0** to disable the aggregation step. This will result in less robust feature subset selection but at much faster speeds
-- Decrease the **num_simul** value but don't decrease it below 5
+- Decrease the **num_simul** value but don't decrease it below 2
 - Set **n_jobs** to -1
 - Use linear models
 
