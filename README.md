@@ -123,6 +123,7 @@ Note: Play with the values of**cv**, **num_simul** and **p_val_thresh** because 
 | Dataset | # of samples | # of features | Time (with PyImpetus) |
 | --- | --- | --- | --- |
 | Ionosphere | 351 | 34 | 35.37 |
+| Ionosphere | 100 | 10000 | 1570 |
 | slice_localization_data | 53500 | 384 | 1296.13 |
 
 ## Future Ideas
