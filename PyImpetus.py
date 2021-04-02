@@ -48,7 +48,7 @@ def tqdm_joblib(tqdm_object):
 
 
 class PPIMBC(TransformerMixin, BaseEstimator):
-    def __init__(self, model=None, p_val_thresh=0.05, num_simul=10, cv=5, random_state=None, n_jobs=-1, verbose=0):
+    def __init__(self, model=None, p_val_thresh=0.05, num_simul=30, cv=0, random_state=None, n_jobs=-1, verbose=2):
         self.random_state = random_state
         if model is not None:
             self.model = model
@@ -234,13 +234,13 @@ class PPIMBC(TransformerMixin, BaseEstimator):
             parallel = Parallel(n_jobs=self.n_jobs)#, verbose=self.verbose)
             if type(self.cv).__name__ == "StratifiedKFold":
                 if self.verbose > 0:
-                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv)) as progress_bar:
+                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv.get_n_splits())) as progress_bar:
                         tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data, Y))
                 else:
                     tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data, Y))
             elif type(self.cv).__name__ == "KFold":
                 if self.verbose > 0:
-                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv)) as progress_bar:
+                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv.get_n_splits())) as progress_bar:
                         tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data))
                 else:
                     tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data))
@@ -338,7 +338,7 @@ class PPIMBC(TransformerMixin, BaseEstimator):
 
 
 class PPIMBR(TransformerMixin, BaseEstimator):
-    def __init__(self, model=None, p_val_thresh=0.05, num_simul=10, cv=5, random_state=None, n_jobs=-1, verbose=0):
+    def __init__(self, model=None, p_val_thresh=0.05, num_simul=30, cv=0, random_state=None, n_jobs=-1, verbose=2):
         self.random_state = random_state
         if model is not None:
             self.model = model
@@ -515,13 +515,13 @@ class PPIMBR(TransformerMixin, BaseEstimator):
             parallel = Parallel(n_jobs=self.n_jobs)#, verbose=self.verbose)
             if type(self.cv).__name__ == "StratifiedKFold":
                 if self.verbose > 0:
-                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv)) as progress_bar:
+                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv.get_n_splits())) as progress_bar:
                         tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data, Y))
                 else:
                     tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data, Y))
             elif type(self.cv).__name__ == "KFold":
                 if self.verbose > 0:
-                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv)) as progress_bar:
+                    with tqdm_joblib(tqdm(desc="Progress bar", total=self.cv.get_n_splits())) as progress_bar:
                         tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data))
                 else:
                     tmp = parallel(delayed(self._find_MB)(data.iloc[train].copy(), Y[train]) for train, test in self.cv.split(data))
