@@ -22,9 +22,9 @@ model = PPIMBC(model, p_val_thresh, num_simul, cv, verbose, random_state, n_jobs
 ```
 - **model** - `estimator object, default=DecisionTreeClassifier()` The model which is used to perform classification in order to find feature importance via significance-test. 
 - **p_val_thresh** - `float, default=0.05` The p-value (in this case, feature importance) below which a feature will be considered as a candidate for the final MB.
-- **num_simul** - `int, default=10` **(This feature has huge impact on speed)** Number of train-test splits to perform to check usefulness of each feature. For large datasets, the value should be considerably reduced though do not go below 5.
-- **cv** - `cv object/int, default=5` Determines the the number of splits for cross-validation. Sklearn CV object can also be passed.
-- **verbose** - `int, default=0` Controls the verbosity: the higher, more the messages.
+- **num_simul** - `int, default=30` **(This feature has huge impact on speed)** Number of train-test splits to perform to check usefulness of each feature. For large datasets, the value should be considerably reduced though do not go below 5.
+- **cv** - `cv object/int, default=0` Determines the number of splits for cross-validation. Sklearn CV object can also be passed. A value of 0 means CV is disabled.
+- **verbose** - `int, default=2` Controls the verbosity: the higher, more the messages.
 - **random_state** - `int or RandomState instance, default=None` Pass an int for reproducible output across multiple function calls.
 - **n_jobs** - `int, default=-1` The number of CPUs to use to do the computation.
 	- `None` means 1 unless in a `:obj:joblib.parallel_backend` context.
@@ -37,9 +37,9 @@ model = PPIMBR(model, p_val_thresh, num_simul, cv, verbose, random_state, n_jobs
 ```
 - **model** - `estimator object, default=DecisionTreeRegressor()` The model which is used to perform regression in order to find feature importance via significance-test. 
 - **p_val_thresh** - `float, default=0.05` The p-value (in this case, feature importance) below which a feature will be considered as a candidate for the final MB.
-- **num_simul** - `int, default=10` **(This feature has huge impact on speed)** Number of train-test splits to perform to check usefulness of each feature. For large datasets, the value should be considerably reduced though do not go below 5.
-- **cv** - `cv object/int, default=5` Determines the the number of splits for cross-validation. Sklearn CV object can also be passed.
-- **verbose** - `int, default=0` Controls the verbosity: the higher, more the messages.
+- **num_simul** - `int, default=30` **(This feature has huge impact on speed)** Number of train-test splits to perform to check usefulness of each feature. For large datasets, the value should be considerably reduced though do not go below 5.
+- **cv** - `cv object/int, default=0` Determines the number of splits for cross-validation. Sklearn CV object can also be passed. A value of 0 means CV is disabled.
+- **verbose** - `int, default=2` Controls the verbosity: the higher, more the messages.
 - **random_state** - `int or RandomState instance, default=None` Pass an int for reproducible output across multiple function calls.
 - **n_jobs** - `int, default=-1` The number of CPUs to use to do the computation.
 	- `None` means 1 unless in a `:obj:joblib.parallel_backend` context.
