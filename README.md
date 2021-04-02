@@ -95,6 +95,7 @@ model.feature_importance()
 ```
 
 ## For better accuracy
+Note: Play with the values of**cv**, **num_simul** and **p_val_thresh** because sometimes a specific combination of these values will end up giving best results
 - Increase the **cv** value
 - Increase the **num_simul** value
 - Use non-linear models for feature selection
