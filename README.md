@@ -22,8 +22,12 @@ model = PPIMBC(model, p_val_thresh, num_simul, simul_size, simul_type, sig_test_
 - **p_val_thresh** - `float, default=0.05` The p-value (in this case, feature importance) below which a feature will be considered as a candidate for the final MB.
 - **num_simul** - `int, default=30` **(This feature has huge impact on speed)** Number of train-test splits to perform to check usefulness of each feature. For large datasets, the value should be considerably reduced though do not go below 5.
 - **simul_size** - `float, default=0.2` The size of the test set in each train-test split
-- **simul_type** - `boolean, default=0` 1 means the train-test splits will be stratified otherwise a normal train-test split is used.
-- **sig_test_type** - `string, default="non-parametric"` This determines whether to use a non-parametric significance test or a parametric significance test. Possible values are `{"parametric", "non-parametric"}`
+- **simul_type** - `boolean, default=0` To apply stratification or not
+	- `0` means train-test splits are not stratified.
+	- `1` means the train-test splits will be stratified.
+- **sig_test_type** - `string, default="non-parametric"` This determines the type of significance test to use.
+	- `"parametric"` means a parametric significance test will be used (Note: This test selects very few features)
+	- `"non-parametric"` means a non-parametric significance test will be used
 - **cv** - `cv object/int, default=0` Determines the number of splits for cross-validation. Sklearn CV object can also be passed. A value of 0 means CV is disabled.
 - **verbose** - `int, default=2` Controls the verbosity: the higher, more the messages.
 - **random_state** - `int or RandomState instance, default=None` Pass an int for reproducible output across multiple function calls.
@@ -40,7 +44,9 @@ model = PPIMBR(model, p_val_thresh, num_simul, simul_size, sig_test_type, cv, ve
 - **p_val_thresh** - `float, default=0.05` The p-value (in this case, feature importance) below which a feature will be considered as a candidate for the final MB.
 - **num_simul** - `int, default=30` **(This feature has huge impact on speed)** Number of train-test splits to perform to check usefulness of each feature. For large datasets, the value should be considerably reduced though do not go below 5.
 - **simul_size** - `float, default=0.2` The size of the test set in each train-test split
-- **sig_test_type** - `string, default="non-parametric"` This determines whether to use a non-parametric significance test or a parametric significance test. Possible values are `{"parametric", "non-parametric"}`
+- **sig_test_type** - `string, default="non-parametric"` This determines the type of significance test to use.
+	- `"parametric"` means a parametric significance test will be used (Note: This test selects very few features)
+	- `"non-parametric"` means a non-parametric significance test will be used
 - **cv** - `cv object/int, default=0` Determines the number of splits for cross-validation. Sklearn CV object can also be passed. A value of 0 means CV is disabled.
 - **verbose** - `int, default=2` Controls the verbosity: the higher, more the messages.
 - **random_state** - `int or RandomState instance, default=None` Pass an int for reproducible output across multiple function calls.
