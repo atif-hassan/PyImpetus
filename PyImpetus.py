@@ -48,7 +48,7 @@ def tqdm_joblib(tqdm_object):
 
 
 class PPIMBC(TransformerMixin, BaseEstimator):
-    def __init__(self, model=None, p_val_thresh=0.05, num_simul=30, cv=0, random_state=None, n_jobs=-1, verbose=2):
+    def __init__(self, model=None, p_val_thresh=0.05, num_simul=30, cv=0, simul_size=0.2, simul_type=0, sig_test_type="non-parametric", random_state=None, n_jobs=-1, verbose=2):
         self.random_state = random_state
         if model is not None:
             self.model = model
@@ -56,6 +56,9 @@ class PPIMBC(TransformerMixin, BaseEstimator):
             self.model = DecisionTreeClassifier(random_state=self.random_state)
         self.p_val_thresh = p_val_thresh
         self.num_simul = num_simul
+        self.simul_size = simul_size
+        self.simul_type = simul_type
+        self.sig_test_type = sig_test_type
         self.cv = cv
         self.n_jobs = n_jobs
         self.verbose = verbose
@@ -76,7 +79,10 @@ class PPIMBC(TransformerMixin, BaseEstimator):
         # The target variable comes in 2D shape. Reshape it
         Y = np.ravel(Y)
         # Split the data into train and test
-        x_train, x_test, y_train, y_test = train_test_split(data, Y, test_size=0.2, random_state=i)
+        if self.simul_type == 0:
+            x_train, x_test, y_train, y_test = train_test_split(data, Y, test_size=self.simul_size, random_state=i)
+        else:
+            x_train, x_test, y_train, y_test = train_test_split(data, Y, test_size=self.simul_size, random_state=i, stratify=Y)
         # Find all the labels. If there are more than 2 labels, then it multi-class classification
         # So handle accordingly
         self_labels = np.unique(y_train)
@@ -137,7 +143,10 @@ class PPIMBC(TransformerMixin, BaseEstimator):
 
         # Since we want log_loss to be lesser for testX,
         # we therefore perform one tail paired t-test (to the left and not right)
-        t_stat, p_val = ss.ttest_ind(testX, testY, alternative="less")
+        if self.sig_test_type == "parametric":
+            t_stat, p_val = ss.ttest_ind(testX, testY, alternative="less", nan_policy="omit")
+        else:
+            t_stat, p_val = ss.wilcoxon(testX, testY, alternative="less", zero_method="zsplit")
         if col is None:
             return p_val#ss.t.cdf(t_stat, len(testX) + len(testY) - 2) # Left part of t-test
         else:
@@ -181,7 +190,7 @@ class PPIMBC(TransformerMixin, BaseEstimator):
         scores = list()
         # If MB is empty, return
         if len(MB) < 1:
-            return list()
+            return list(), list()
         # Generate a list for false positive features
         remove = list()
         # For each feature in MB, check if it is false positive
@@ -278,12 +287,23 @@ class PPIMBC(TransformerMixin, BaseEstimator):
                     final_MB = fs
                     final_feat_imp = feat_imp
                     max_score = score
-                    
-            self.MB = final_MB
-            self.feat_imp_scores = final_feat_imp
+
+            # Sort the features according to their importance
+            tmp_feats_and_imp = list(zip(final_MB, final_feat_imp))
+            tmp_feats_and_imp.sort(key = lambda x: x[1], reverse=True)
+            
+            self.MB = [i for i, _ in tmp_feats_and_imp]
+            self.feat_imp_scores = [i for _, i in tmp_feats_and_imp]
 
         else:
-            self.MB, self.feat_imp_scores = self._find_MB(data.copy(), Y)
+            final_MB, final_feat_imp = self._find_MB(data.copy(), Y)
+
+            # Sort the features according to their importance
+            tmp_feats_and_imp = list(zip(final_MB, final_feat_imp))
+            tmp_feats_and_imp.sort(key = lambda x: x[1], reverse=True)
+            
+            self.MB = [i for i, _ in tmp_feats_and_imp]
+            self.feat_imp_scores = [i for _, i in tmp_feats_and_imp]
 
 
     
@@ -338,7 +358,7 @@ class PPIMBC(TransformerMixin, BaseEstimator):
 
 
 class PPIMBR(TransformerMixin, BaseEstimator):
-    def __init__(self, model=None, p_val_thresh=0.05, num_simul=30, cv=0, random_state=None, n_jobs=-1, verbose=2):
+    def __init__(self, model=None, p_val_thresh=0.05, num_simul=30, simul_size=0.2, sig_test_type="non-parametric", cv=0, random_state=None, n_jobs=-1, verbose=2):
         self.random_state = random_state
         if model is not None:
             self.model = model
@@ -346,6 +366,8 @@ class PPIMBR(TransformerMixin, BaseEstimator):
             self.model = DecisionTreeRegressor(random_state=self.random_state)
         self.p_val_thresh = p_val_thresh
         self.num_simul = num_simul
+        self.simul_size = simul_size
+        self.sig_test_type = sig_test_type
         self.cv = cv
         self.n_jobs = n_jobs
         self.verbose = verbose
@@ -368,7 +390,7 @@ class PPIMBR(TransformerMixin, BaseEstimator):
         # Clone the user provided model
         model = clone(self.model)
         # Split the data into train and test
-        x_train, x_test, y_train, y_test = train_test_split(data, Y, test_size=0.2, random_state=i)
+        x_train, x_test, y_train, y_test = train_test_split(data, Y, test_size=self.simul_size, random_state=i)
 
         # Fit the model on train data
         model.fit(x_train, y_train)
@@ -417,7 +439,10 @@ class PPIMBR(TransformerMixin, BaseEstimator):
 
         # Since we want log_loss to be lesser for testX,
         # we therefore perform one tail paired t-test (to the left and not right)
-        t_stat, p_val = ss.ttest_ind(testX, testY, nan_policy='omit', alternative="less")
+        if self.sig_test_type == "parametric":
+            t_stat, p_val = ss.ttest_ind(testX, testY, alternative="less", nan_policy="omit")
+        else:
+            t_stat, p_val = ss.wilcoxon(testX, testY, alternative="less", zero_method="zsplit")
         if col is None:
             return p_val#ss.t.cdf(t_stat, len(testX) + len(testY) - 2) # Left part of t-test
         else:
@@ -560,11 +585,22 @@ class PPIMBR(TransformerMixin, BaseEstimator):
                     final_feat_imp = feat_imp
                     max_score = score
                     
-            self.MB = final_MB
-            self.feat_imp_scores = final_feat_imp
+            # Sort the features according to their importance
+            tmp_feats_and_imp = list(zip(final_MB, final_feat_imp))
+            tmp_feats_and_imp.sort(key = lambda x: x[1], reverse=True)
+            
+            self.MB = [i for i, _ in tmp_feats_and_imp]
+            self.feat_imp_scores = [i for _, i in tmp_feats_and_imp]
 
         else:
-            self.MB, self.feat_imp_scores = self._find_MB(data.copy(), Y)
+            final_MB, final_feat_imp = self._find_MB(data.copy(), Y)
+
+            # Sort the features according to their importance
+            tmp_feats_and_imp = list(zip(final_MB, final_feat_imp))
+            tmp_feats_and_imp.sort(key = lambda x: x[1], reverse=True)
+            
+            self.MB = [i for i, _ in tmp_feats_and_imp]
+            self.feat_imp_scores = [i for _, i in tmp_feats_and_imp]
 
 
     
