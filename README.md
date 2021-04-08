@@ -5,11 +5,9 @@
 [![Downloads](https://pepy.tech/badge/PyImpetus)](https://pepy.tech/project/PyImpetus)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/atif-hassan/PyImpetus/commits/master)
 # PyImpetus
-PyImpetus is a Markov Blanket based **feature selection algorithm** that selects a subset of features by considering their performance both individually as well as a group. This allows the algorithm to not only select the best set of features, but also select the **best set of features that play well with each other**. For example, the best performing feature might not play well with others while the remaining features, when taken together could out-perform the best feature. PyImpetus takes this into account and produces the best possible combination. Thus, the algorithm provides a minimal feature subset. So, **you do not have to decide how many features to take. PyImpetus selects the optimal set for you.**
+PyImpetus is a Markov Blanket based **feature selection algorithm** that selects a subset of features by considering their performance both individually as well as a group. This allows the algorithm to not only select the best set of features, but also select the **best set of features that play well with each other**. For example, the best performing feature might not play well with others while the remaining features, when taken together could out-perform the best feature. PyImpetus takes this into account and produces the best possible combination. Thus, the algorithm provides a minimal feature subset. So, **you do not have to decide on how many features to take. PyImpetus selects the optimal set for you.**
 
-PyImpetus has been completely revamped and now supports **binary classification, multi-class classification and regression** tasks. It uses a novel CV based aggregation method to recommend the most roubst set of minimal features (Markov Blanket).
-
-PyImpetus was tested on 13 datasets and outperformed state-of-the-art Markov Blanket learning algorithms on all of them along with traditional feature selection algorithms such as Forward Feature Selection, Backward Feature Elimination and Recursive Feature Elimination.
+PyImpetus has been completely revamped and now supports **binary classification, multi-class classification and regression** tasks. It has been tested on 14 datasets and outperformed state-of-the-art Markov Blanket learning algorithms on all of them along with traditional feature selection algorithms such as Forward Feature Selection, Backward Feature Elimination and Recursive Feature Elimination.
 
 ## How to install?
 ```pip install PyImpetus```
@@ -18,11 +16,14 @@ PyImpetus was tested on 13 datasets and outperformed state-of-the-art Markov Bla
 ```python
 # The initialization of PyImpetus takes in multiple parameters as input
 # PPIMBC is for classification
-model = PPIMBC(model, p_val_thresh, num_simul, cv, verbose, random_state, n_jobs)
+model = PPIMBC(model, p_val_thresh, num_simul, simul_size, simul_type, sig_test_type, cv, verbose, random_state, n_jobs)
 ```
 - **model** - `estimator object, default=DecisionTreeClassifier()` The model which is used to perform classification in order to find feature importance via significance-test. 
 - **p_val_thresh** - `float, default=0.05` The p-value (in this case, feature importance) below which a feature will be considered as a candidate for the final MB.
-- **num_simul** - `int, default=30` **(This feature has huge impact on speed)** Number of train-test splits to perform to check usefulness of each feature. For large datasets, the value should be considerably reduced though do not go below 2.
+- **num_simul** - `int, default=30` **(This feature has huge impact on speed)** Number of train-test splits to perform to check usefulness of each feature. For large datasets, the value should be considerably reduced though do not go below 5.
+- **simul_size** - `float, default=0.2` The size of the test set in each train-test split
+- **simul_type** - `boolean, default=0` 1 means the train-test splits will be stratified otherwise a normal train-test split is used.
+- **sig_test_type** - `string, default="non-parametric"` This determines whether to use a non-parametric significance test or a parametric significance test. Possible values are `{"parametric", "non-parametric"}`
 - **cv** - `cv object/int, default=0` Determines the number of splits for cross-validation. Sklearn CV object can also be passed. A value of 0 means CV is disabled.
 - **verbose** - `int, default=2` Controls the verbosity: the higher, more the messages.
 - **random_state** - `int or RandomState instance, default=None` Pass an int for reproducible output across multiple function calls.
@@ -32,12 +33,14 @@ model = PPIMBC(model, p_val_thresh, num_simul, cv, verbose, random_state, n_jobs
 
 ```python
 # The initialization of PyImpetus takes in multiple parameters as input
-# PPIMBC is for regression
-model = PPIMBR(model, p_val_thresh, num_simul, cv, verbose, random_state, n_jobs)
+# PPIMBR is for regression
+model = PPIMBR(model, p_val_thresh, num_simul, simul_size, sig_test_type, cv, verbose, random_state, n_jobs)
 ```
 - **model** - `estimator object, default=DecisionTreeRegressor()` The model which is used to perform regression in order to find feature importance via significance-test. 
 - **p_val_thresh** - `float, default=0.05` The p-value (in this case, feature importance) below which a feature will be considered as a candidate for the final MB.
-- **num_simul** - `int, default=30` **(This feature has huge impact on speed)** Number of train-test splits to perform to check usefulness of each feature. For large datasets, the value should be considerably reduced though do not go below 2.
+- **num_simul** - `int, default=30` **(This feature has huge impact on speed)** Number of train-test splits to perform to check usefulness of each feature. For large datasets, the value should be considerably reduced though do not go below 5.
+- **simul_size** - `float, default=0.2` The size of the test set in each train-test split
+- **sig_test_type** - `string, default="non-parametric"` This determines whether to use a non-parametric significance test or a parametric significance test. Possible values are `{"parametric", "non-parametric"}`
 - **cv** - `cv object/int, default=0` Determines the number of splits for cross-validation. Sklearn CV object can also be passed. A value of 0 means CV is disabled.
 - **verbose** - `int, default=2` Controls the verbosity: the higher, more the messages.
 - **random_state** - `int or RandomState instance, default=None` Pass an int for reproducible output across multiple function calls.
@@ -81,7 +84,7 @@ from PyImpetus import PPIMBC, PPIMBR
 # Import the algorithm. PPIMBC is for classification and PPIMBR is for regression
 from PyImeptus import PPIMBC, PPIMBR
 # Initialize the PyImpetus object
-model = PPIMBC(model=SVC(random_state=27, class_weight="balanced"), p_val_thresh=0.05, num_simul=30, cv=5, random_state=27, n_jobs=-1, verbose=2)
+model = PPIMBC(model=SVC(random_state=27, class_weight="balanced"), p_val_thresh=0.05, num_simul=30, simul_size=0.2, simul_type=0, sig_test_type="non-parametric", cv=5, random_state=27, n_jobs=-1, verbose=2)
 # The fit_transform function is a wrapper for the fit and transform functions, individually.
 # The fit function finds the MB for given data while transform function provides the pruned form of the dataset
 df_train = model.fit_transform(df_train.drop("Response", axis=1), df_train["Response"].values)
@@ -95,20 +98,22 @@ model.feature_importance()
 ```
 
 ## For better accuracy
-Note: Play with the values of **cv**, **num_simul** and **p_val_thresh** because sometimes a specific combination of these values will end up giving best results
-- Increase the **cv** value
+Note: Play with the values of **num_simul**, **simul_size**, **simul_type** and **p_val_thresh** because sometimes a specific combination of these values will end up giving best results
+- ~~Increase the **cv** value~~ In all experiments, **cv** did not help in getting better accuracy. Use this only when you have extremely small dataset
 - Increase the **num_simul** value
+- Try one of these values for **simul_size** = `{0.1, 0.2, 0.3, 0.4}`
 - Use non-linear models for feature selection
 - Increase value of **p_val_thresh** in order to increase the number of features to include in thre Markov Blanket
 
 ## For better speeds
-- Decrease the **cv** value. For large datasets cv might not be required. Therefore, set **cv=0** to disable the aggregation step. This will result in less robust feature subset selection but at much faster speeds
-- Decrease the **num_simul** value but don't decrease it below 2
+- ~~Decrease the **cv** value. For large datasets cv might not be required. Therefore, set **cv=0** to disable the aggregation step. This will result in less robust feature subset selection but at much faster speeds~~
+- Decrease the **num_simul** value but don't decrease it below 5
 - Set **n_jobs** to -1
 - Use linear models
 
 ## For selection of less features
 - Try reducing the **p_val_thresh** value
+- Try out `sig_test_type = "parametric"`
 
 ## Performance in terms of Accuracy (classification) and MSE (regression)
 | Dataset | # of samples | # of features | Task Type | Score (all features) | Score (with PyImpetus) | # of features selected | % of features selected | Tutorial |
