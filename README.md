@@ -108,7 +108,7 @@ Note: Play with the values of **num_simul**, **simul_size**, **simul_type** and 
 - ~~Increase the **cv** value~~ In all experiments, **cv** did not help in getting better accuracy. Use this only when you have extremely small dataset
 - Increase the **num_simul** value
 - Try one of these values for **simul_size** = `{0.1, 0.2, 0.3, 0.4}`
-- Use non-linear models for feature selection
+- Use non-linear models for feature selection. Apply hyper-parameter tuning on models
 - Increase value of **p_val_thresh** in order to increase the number of features to include in thre Markov Blanket
 
 ## For better speeds
