@@ -124,17 +124,17 @@ Note: Play with the values of **num_simul**, **simul_size**, **simul_type** and 
 ## Performance in terms of Accuracy (classification) and MSE (regression)
 | Dataset | # of samples | # of features | Task Type | Score (all features) | Score (with PyImpetus) | # of features selected | % of features selected | Tutorial |
 | --- | --- | --- | --- |--- |--- |--- |--- |--- |
-| Ionosphere | 351 | 34 | Classification | 88.01 | 91.73 | 5 | 14% | [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Classification_Tutorial.ipynb) |
-| Arcene | 100 | 10000 | Classification | 87.6 | 87.8 | 3 | 0.0003% | |
+| Ionosphere | 351 | 34 | Classification | 88.01 | 92.86 | 14 | 42.42% | [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Classification_Tutorial.ipynb) |
+| Arcene | 100 | 10000 | Classification | 82 | 84.72 | 304 | 3.04% | |
 | slice_localization_data | 53500 | 384 | Regression | 5.98 | 5.16 | 45 | 11.7% | [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Regression_Tutorial.ipynb) |
 
-**Note**: Here, for the first task, a higher accuracy score is better while for the second, task, a lower MSE (Mean Squared Error) is better.
+**Note**: Here, for the first and second tasks, a higher accuracy score is better while for the thrid, task, a lower MSE (Mean Squared Error) is better.
 
 ## Performance in terms of Time (in seconds)
 | Dataset | # of samples | # of features | Time (with PyImpetus) |
 | --- | --- | --- | --- |
 | Ionosphere | 351 | 34 | 35.37 |
-| Ionosphere | 100 | 10000 | 1570 |
+| Arcene | 100 | 10000 | 1570 |
 | slice_localization_data | 53500 | 384 | 1296.13 |
 
 ## Future Ideas
