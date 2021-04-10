@@ -122,11 +122,12 @@ Note: Play with the values of **num_simul**, **simul_size**, **simul_type** and 
 - Try out `sig_test_type = "parametric"`
 
 ## Performance in terms of Accuracy (classification) and MSE (regression)
-| Dataset | # of samples | # of features | Task Type | Score using all features | Score using PyImpetus | # of features selected | % of features selected | Tutorial |
+| Dataset | # of samples | # of features | Task Type | Score using all features | Score using [featurewiz](https://github.com/AutoViML/featurewiz) | Score using PyImpetus | # of features selected | % of features selected | Tutorial |
 | --- | --- | --- | --- |--- |--- |--- |--- |--- |
-| Ionosphere | 351 | 34 | Classification | 88.01% | 92.86% | 14 | 42.42% | [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Classification_Tutorial.ipynb) |
-| Arcene | 100 | 10000 | Classification | 82% | 84.72% | 304 | 3.04% | |
-| slice_localization_data | 53500 | 384 | Regression | 6.54 | 5.69 | 259 | 67.45% | [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Regression_Tutorial.ipynb) |
+| Ionosphere | 351 | 34 | Classification | 88.01% |  | 92.86% | 14 | 42.42% | [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Classification_Tutorial.ipynb) |
+| Arcene | 100 | 10000 | Classification | 82% |  | 84.72% | 304 | 3.04% | |
+| AlonDS2000 | 62 | 2000 | Classification | 80.55% | 86.98% | 88.49% | 75 | 3.75% | |
+| slice_localization_data | 53500 | 384 | Regression | 6.54 |  | 5.69 | 259 | 67.45% | [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Regression_Tutorial.ipynb) |
 
 **Note**: Here, for the first and second tasks, a higher accuracy score is better while for the thrid, task, a lower MSE (Mean Squared Error) is better.
 
@@ -135,6 +136,7 @@ Note: Play with the values of **num_simul**, **simul_size**, **simul_type** and 
 | --- | --- | --- | --- |
 | Ionosphere | 351 | 34 | 35.37 |
 | Arcene | 100 | 10000 | 1570 |
+| AlonDS2000 | 62 | 2000 | 125.511 |
 | slice_localization_data | 53500 | 384 | 1296.13 |
 
 ## Future Ideas
