@@ -129,7 +129,7 @@ Note: Play with the values of **num_simul**, **simul_size**, **simul_type** and 
 | AlonDS2000 | 62 | 2000 | Classification | 80.55% | 86.98% | 88.49% | 75 | 3.75% | |
 | slice_localization_data | 53500 | 384 | Regression | 6.54 |  | 5.69 | 259 | 67.45% | [tutorial here](https://github.com/atif-hassan/PyImpetus/blob/master/tutorials/Regression_Tutorial.ipynb) |
 
-**Note**: Here, for the first and second tasks, a higher accuracy score is better while for the thrid, task, a lower MSE (Mean Squared Error) is better.
+**Note**: Here, for the first, second and third tasks, a higher accuracy score is better while for the fourth task, a lower MSE (Mean Squared Error) is better.
 
 ## Performance in terms of Time (in seconds)
 | Dataset | # of samples | # of features | Time (with PyImpetus) |
