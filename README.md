@@ -146,11 +146,9 @@ Note: Play with the values of **num_simul**, **simul_size**, **simul_type** and 
 Drop me an email at **atif.hit.hassan@gmail.com** if you want any particular feature
 
 # Please cite this work as
-@misc{hassan2021ppfs,
-      title={PPFS: Predictive Permutation Feature Selection}, 
-      author={Atif Hassan and Jiaul H. Paik and Swanand Khare and Syed Asif Hassan},
-      year={2021},
-      eprint={2110.10713},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+@article{hassan2021ppfs,
+  title={PPFS: Predictive Permutation Feature Selection},
+  author={Hassan, Atif and Paik, Jiaul H and Khare, Swanand and Hassan, Syed Asif},
+  journal={arXiv preprint arXiv:2110.10713},
+  year={2021}
 }
