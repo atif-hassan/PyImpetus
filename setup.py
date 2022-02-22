@@ -6,10 +6,10 @@ with open("README.md", "r") as fh:
     
 setuptools.setup(
      name = 'PyImpetus',  
-     version = '1.1.4',
+     version = '4.1.1',
      author = "Atif Hassan",
      author_email = "atif.hit.hassan@gmail.com",
-     description = "PyImpetus is a feature selection algorithm which considers features both separately and together as a group in order to provide not just the best set of features but also the best combination of features",
+     description = "PyImpetus is a Markov Blanket based feature subset selection algorithm that considers features both separately and together as a group in order to provide not just the best set of features but also the best combination of features",
      long_description = long_description,
      long_description_content_type = "text/markdown",
      url = "https://github.com/atif-hassan/PyImpetus",

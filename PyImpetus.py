@@ -39,7 +39,8 @@ def tqdm_joblib(tqdm_object):
         tqdm_object.close()   
 
 
-
+def convert_numpy_to_pandas(data):
+    return pd.DataFrame({'Column'+str(i): data[:, i-1] for i in range(1, len(data[0])+1)})
 
 
 
@@ -237,6 +238,10 @@ class PPIMBC(TransformerMixin, BaseEstimator):
     # data - The data provided by user
     # Y - Target variable
     def fit(self, data, Y):
+        # If user passed a numpy matrix then convert to pandas dataframe and proceed
+        if not isinstance(data, pd.DataFrame):
+            data = convert_numpy_to_pandas(data)
+        
         # for a value of 0, no CV is applied
         if self.cv!= 0:
             # Find MB for each fold in parallel
@@ -312,7 +317,13 @@ class PPIMBC(TransformerMixin, BaseEstimator):
     # transform() - Function that returns the MB part of the data #
     #--------------------------------------------------------------
     def transform(self, data):
-        return data[self.MB]
+        # If user passed a numpy matrix then convert to pandas dataframe
+        if not isinstance(data, pd.DataFrame):
+            data = convert_numpy_to_pandas(data)
+            # And return a numpy matrix
+            return data[self.MB].values
+        else:
+            return data[self.MB]
 
 
 
@@ -534,6 +545,10 @@ class PPIMBR(TransformerMixin, BaseEstimator):
     # data - The data provided by user
     # Y - Target variable
     def fit(self, data, Y):
+        # If user passed a numpy matrix then convert to pandas dataframe and proceed
+        if not isinstance(data, pd.DataFrame):
+            data = convert_numpy_to_pandas(data)
+            
         # for a value of 0, no CV is applied
         if self.cv!= 0:
             # Find MB for each fold in parallel
@@ -609,7 +624,13 @@ class PPIMBR(TransformerMixin, BaseEstimator):
     # transform() - Function that returns the MB part of the data #
     #--------------------------------------------------------------
     def transform(self, data):
-        return data[self.MB]
+        # If user passed a numpy matrix then convert to pandas dataframe
+        if not isinstance(data, pd.DataFrame):
+            data = convert_numpy_to_pandas(data)
+            # And return a numpy matrix
+            return data[self.MB].values
+        else:
+            return data[self.MB]
 
 
 
