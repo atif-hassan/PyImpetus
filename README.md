@@ -58,20 +58,23 @@ model = PPIMBR(model, p_val_thresh, num_simul, simul_size, sig_test_type, cv, ve
 # To fit PyImpetus on provided dataset and find recommended features
 fit(data, target)
 ```
-- **data** - A pandas dataframe upon which feature selection is to be applied
+- **data** - A pandas dataframe or a numpy matrix upon which feature selection is to be applied\
+(Passing pandas dataframe allows using correct column names. Numpy matrix will apply default column names)
 - **target** - A numpy array, denoting the target variable
 
 ```python
 # This function returns the names of the columns that form the MB (These are the recommended features)
 transform(data)
 ```
-- **data** - A pandas dataframe which needs to be pruned
+- **data** - A pandas dataframe or a numpy matrix which needs to be pruned\
+(Passing pandas dataframe allows using correct column names. Numpy matrix will apply default column names)
 
 ```python
 # To fit PyImpetus on provided dataset and return pruned data
 fit_transform(data, target)
 ```
-- **data** - A pandas dataframe upon which feature selection is to be applied
+- **data** - A pandas dataframe or numpy matrix upon which feature selection is to be applied\
+(Passing pandas dataframe allows using correct column names. Numpy matrix will apply default column names)
 - **target** - A numpy array, denoting the target variable
 
 ```python
@@ -86,6 +89,7 @@ from PyImpetus import PPIMBC, PPIMBR
 ```
 
 ## Usage
+If data is a pandas dataframe
 ```python
 # Import the algorithm. PPIMBC is for classification and PPIMBR is for regression
 from PyImeptus import PPIMBC, PPIMBR
@@ -95,6 +99,24 @@ model = PPIMBC(model=SVC(random_state=27, class_weight="balanced"), p_val_thresh
 # The fit function finds the MB for given data while transform function provides the pruned form of the dataset
 df_train = model.fit_transform(df_train.drop("Response", axis=1), df_train["Response"].values)
 df_test = model.transform(df_test)
+# Check out the MB
+print(model.MB)
+# Check out the feature importance scores for the selected feature subset
+print(model.feat_imp_scores)
+# Get a plot of the feature importance scores
+model.feature_importance()
+```
+
+If data is a numpy matrix
+```python
+# Import the algorithm. PPIMBC is for classification and PPIMBR is for regression
+from PyImeptus import PPIMBC, PPIMBR
+# Initialize the PyImpetus object
+model = PPIMBC(model=SVC(random_state=27, class_weight="balanced"), p_val_thresh=0.05, num_simul=30, simul_size=0.2, simul_type=0, sig_test_type="non-parametric", cv=5, random_state=27, n_jobs=-1, verbose=2)
+# The fit_transform function is a wrapper for the fit and transform functions, individually.
+# The fit function finds the MB for given data while transform function provides the pruned form of the dataset
+df_train = model.fit_transform(x_train, y_train)
+df_test = model.transform(x_test)
 # Check out the MB
 print(model.MB)
 # Check out the feature importance scores for the selected feature subset
