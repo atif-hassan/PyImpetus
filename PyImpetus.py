@@ -498,7 +498,7 @@ class PPIMBR(TransformerMixin, BaseEstimator):
         scores = list()
         # If MB is empty, return
         if len(MB) < 1:
-            return list()
+            return list(), list() # Callers expect a pair
         # Generate a list for false positive features
         remove = list()
         # For each feature in MB, check if it is false positive
