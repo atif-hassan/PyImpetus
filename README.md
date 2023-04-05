@@ -92,7 +92,7 @@ from PyImpetus import PPIMBC, PPIMBR
 If data is a pandas dataframe
 ```python
 # Import the algorithm. PPIMBC is for classification and PPIMBR is for regression
-from PyImeptus import PPIMBC, PPIMBR
+from PyImpetus import PPIMBC, PPIMBR
 # Initialize the PyImpetus object
 model = PPIMBC(model=SVC(random_state=27, class_weight="balanced"), p_val_thresh=0.05, num_simul=30, simul_size=0.2, simul_type=0, sig_test_type="non-parametric", cv=5, random_state=27, n_jobs=-1, verbose=2)
 # The fit_transform function is a wrapper for the fit and transform functions, individually.
@@ -110,7 +110,7 @@ model.feature_importance()
 If data is a numpy matrix
 ```python
 # Import the algorithm. PPIMBC is for classification and PPIMBR is for regression
-from PyImeptus import PPIMBC, PPIMBR
+from PyImpetus import PPIMBC, PPIMBR
 # Initialize the PyImpetus object
 model = PPIMBC(model=SVC(random_state=27, class_weight="balanced"), p_val_thresh=0.05, num_simul=30, simul_size=0.2, simul_type=0, sig_test_type="non-parametric", cv=5, random_state=27, n_jobs=-1, verbose=2)
 # The fit_transform function is a wrapper for the fit and transform functions, individually.
