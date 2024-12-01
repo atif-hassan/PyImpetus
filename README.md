@@ -168,18 +168,7 @@ Note: Play with the values of **num_simul**, **simul_size**, **simul_type** and 
 Drop me an email at **atif.hit.hassan@gmail.com** if you want any particular feature
 
 # Please cite this work as
-@article{HASSAN2025111069,
-title = {A wrapper feature selection approach using Markov blankets},
-journal = {Pattern Recognition},
-volume = {158},
-pages = {111069},
-year = {2025},
-issn = {0031-3203},
-doi = {https://doi.org/10.1016/j.patcog.2024.111069},
-url = {https://www.sciencedirect.com/science/article/pii/S0031320324008203},
-author = {Atif Hassan and Jiaul Hoque Paik and Swanand Ravindra Khare and Syed Asif Hassan},
-keywords = {Feature selection, Markov blanket, Conditional independence test, Classification, Regression},
-}
+Citation is available in the [CITATION.bib file](https://github.com/atif-hassan/PyImpetus/blob/master/CITATION.bib)
 
 [Alternatively, use the following DBLP Bibtex link](https://dblp.uni-trier.de/rec/journals/pr/HassanPKS25.html)
 
