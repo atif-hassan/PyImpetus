@@ -5,7 +5,7 @@
 [![Downloads](https://pepy.tech/badge/PyImpetus)](https://pepy.tech/project/PyImpetus)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/atif-hassan/PyImpetus/commits/master)
 # PyImpetus
-PyImpetus is a Markov Blanket based **feature selection algorithm** that selects a subset of features by considering their performance both individually as well as a group. This allows the algorithm to not only select the best set of features, but also select the **best set of features that play well with each other**. For example, the best performing feature might not play well with others while the remaining features, when taken together could out-perform the best feature. PyImpetus takes this into account and produces the best possible combination. Thus, the algorithm provides a minimal feature subset. So, **you do not have to decide on how many features to take. PyImpetus selects the optimal set for you.**
+PyImpetus is a **[Markov Blanket based feature selection algorithm](https://www.sciencedirect.com/science/article/pii/S0031320324008203)** that selects a subset of features by considering their performance both individually as well as a group. This allows the algorithm to not only select the best set of features, but also select the **best set of features that play well with each other**. For example, the best performing feature might not play well with others while the remaining features, when taken together could out-perform the best feature. PyImpetus takes this into account and produces the best possible combination. Thus, the algorithm provides a minimal feature subset. So, **you do not have to decide on how many features to take. PyImpetus selects the optimal set for you.**
 
 PyImpetus has been completely revamped and now supports **binary classification, multi-class classification and regression** tasks. It has been tested on 14 datasets and outperformed state-of-the-art Markov Blanket learning algorithms on all of them along with traditional feature selection algorithms such as Forward Feature Selection, Backward Feature Elimination and Recursive Feature Elimination.
 
@@ -168,14 +168,23 @@ Note: Play with the values of **num_simul**, **simul_size**, **simul_type** and 
 Drop me an email at **atif.hit.hassan@gmail.com** if you want any particular feature
 
 # Please cite this work as
-@article{hassan2021ppfs,
-  title={PPFS: Predictive Permutation Feature Selection},
-  author={Hassan, Atif and Paik, Jiaul H and Khare, Swanand and Hassan, Syed Asif},
-  journal={arXiv preprint arXiv:2110.10713},
-  year={2021}
+@article{HASSAN2025111069,
+title = {A wrapper feature selection approach using Markov blankets},
+journal = {Pattern Recognition},
+volume = {158},
+pages = {111069},
+year = {2025},
+issn = {0031-3203},
+doi = {https://doi.org/10.1016/j.patcog.2024.111069},
+url = {https://www.sciencedirect.com/science/article/pii/S0031320324008203},
+author = {Atif Hassan and Jiaul Hoque Paik and Swanand Ravindra Khare and Syed Asif Hassan},
+keywords = {Feature selection, Markov blanket, Conditional independence test, Classification, Regression},
 }
 
-[Alternatively, use the following DBLP Bibtex link](https://dblp.uni-trier.de/rec/journals/corr/abs-2110-10713.html?view=bibtex)
+[Alternatively, use the following DBLP Bibtex link](https://dblp.uni-trier.de/rec/journals/pr/HassanPKS25.html)
 
 ## Corresponding paper
+[A wrapper feature selection approach using Markov blankets](https://www.sciencedirect.com/science/article/pii/S0031320324008203)
+
+## Old ArXiv version
 [PPFS: Predictive Permutation Feature Selection](https://arxiv.org/abs/2110.10713)
