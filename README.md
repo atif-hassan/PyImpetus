@@ -4,7 +4,7 @@
 [![PyPI version shields.io](https://img.shields.io/pypi/v/PyImpetus.svg)](https://pypi.python.org/pypi/PyImpetus/)
 [![Downloads](https://pepy.tech/badge/PyImpetus)](https://pepy.tech/project/PyImpetus)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/atif-hassan/PyImpetus/commits/master)
-# PyImpetus
+# PyImpetus (a.k.a PPFS)
 PyImpetus is a **[Markov Blanket based feature selection algorithm](https://www.sciencedirect.com/science/article/pii/S0031320324008203)** that selects a subset of features by considering their performance both individually as well as a group. This allows the algorithm to not only select the best set of features, but also select the **best set of features that play well with each other**. For example, the best performing feature might not play well with others while the remaining features, when taken together could out-perform the best feature. PyImpetus takes this into account and produces the best possible combination. Thus, the algorithm provides a minimal feature subset. So, **you do not have to decide on how many features to take. PyImpetus selects the optimal set for you.**
 
 PyImpetus has been completely revamped and now supports **binary classification, multi-class classification and regression** tasks. It has been tested on 14 datasets and outperformed state-of-the-art Markov Blanket learning algorithms on all of them along with traditional feature selection algorithms such as Forward Feature Selection, Backward Feature Elimination and Recursive Feature Elimination.
